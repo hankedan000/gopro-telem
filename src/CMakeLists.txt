@@ -9,6 +9,11 @@ target_include_directories(GoProTelem
 	PUBLIC
 		"${CMAKE_CURRENT_SOURCE_DIR}/include")
 
+target_link_libraries(GoProTelem
+	PRIVATE
+		gpmf-mp4reader
+		gpmf-parser)
+
 # generate the version header
 configure_file("include/version.h.in" "include/version.h")
 
@@ -32,7 +37,7 @@ install(
 )
 
 # so this target can be used
-export(EXPORT GoProTelemTargets
-	FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/GoProTelemTargets.cmake"
-	NAMESPACE GoProTelem::
-)
+# export(EXPORT GoProTelemTargets
+# 	FILE "${CMAKE_CURRENT_BINARY_DIR}/cmake/GoProTelemTargets.cmake"
+# 	NAMESPACE GoProTelem::
+# )
