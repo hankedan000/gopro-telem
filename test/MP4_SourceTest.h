@@ -7,7 +7,9 @@
 class MP4_SourceTest : public CppUnit::TestFixture
 {
 	CPPUNIT_TEST_SUITE(MP4_SourceTest);
-	CPPUNIT_TEST(basicTests);
+	CPPUNIT_TEST(mp4SourceTests);
+	CPPUNIT_TEST(payloadTests);
+	CPPUNIT_TEST(streamTests);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -16,7 +18,9 @@ public:
 	void tearDown();
 
 protected:
-	void basicTests();
+	void mp4SourceTests();
+	void payloadTests();
+	void streamTests();
 
 private:
 

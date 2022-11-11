@@ -8,16 +8,204 @@
 namespace gpt
 {
 
+	GPMF_LEVELS
+	toGPMF_LEVELS(
+		gpt::GPMF_Levels level)
+	{
+		switch (level)
+		{
+			case gpt::GPMF_Levels::GPMF_CURRENT_LEVEL:
+				return GPMF_LEVELS::GPMF_CURRENT_LEVEL;
+			case gpt::GPMF_Levels::GPMF_RECURSE_LEVELS:
+				return GPMF_LEVELS::GPMF_RECURSE_LEVELS;
+			case gpt::GPMF_Levels::GPMF_TOLERANT:
+				return GPMF_LEVELS::GPMF_TOLERANT;
+		}
+		throw std::runtime_error("unsupported level conversion!");
+	}
+
+	std::string
+	gpmfErrorToString(
+		GPMF_ERROR error)
+	{
+		switch (error)
+		{
+			case GPMF_ERROR::GPMF_OK:
+				return "GPMF_OK";
+			case GPMF_ERROR::GPMF_ERROR_MEMORY:
+				return "GPMF_ERROR_MEMORY";
+			case GPMF_ERROR::GPMF_ERROR_BAD_STRUCTURE:
+				return "GPMF_ERROR_BAD_STRUCTURE";
+			case GPMF_ERROR::GPMF_ERROR_BUFFER_END:
+				return "GPMF_ERROR_BUFFER_END";
+			case GPMF_ERROR::GPMF_ERROR_FIND:
+				return "GPMF_ERROR_FIND";
+			case GPMF_ERROR::GPMF_ERROR_LAST:
+				return "GPMF_ERROR_LAST";
+			case GPMF_ERROR::GPMF_ERROR_TYPE_NOT_SUPPORTED:
+				return "GPMF_ERROR_TYPE_NOT_SUPPORTED";
+			case GPMF_ERROR::GPMF_ERROR_SCALE_NOT_SUPPORTED:
+				return "GPMF_ERROR_SCALE_NOT_SUPPORTED";
+			case GPMF_ERROR::GPMF_ERROR_SCALE_COUNT:
+				return "GPMF_ERROR_SCALE_COUNT";
+			case GPMF_ERROR::GPMF_ERROR_UNKNOWN_TYPE:
+				return "GPMF_ERROR_UNKNOWN_TYPE";
+			case GPMF_ERROR::GPMF_ERROR_RESERVED:
+				return "GPMF_ERROR_RESERVED";
+			default:
+				return "**INVALID_ERROR**";
+		}
+	}
+
+	std::string
+	gpmfErrorToString(
+		uint32_t error)
+	{
+		return gpmfErrorToString((GPMF_ERROR)error);
+	}
+
+	FourCC::FourCC()
+	 : fourCC_(::GPMF_KEY_END)
+	{
+	}
+
+	FourCC::FourCC(
+		FourCC_uint fourCC)
+	 : fourCC_(fourCC)
+	{
+	}
+
+	FourCC_uint
+	FourCC::uint()
+	{
+		return fourCC_;
+	}
+
+	std::string
+	FourCC::toString()
+	{
+		std::string strOut("    ");
+		strOut[3] = (fourCC_ >> 24) & 0xFF;
+		strOut[2] = (fourCC_ >> 16) & 0xFF;
+		strOut[1] = (fourCC_ >> 8)  & 0xFF;
+		strOut[0] = (fourCC_)       & 0xFF;
+		return strOut;
+	}
+
 	GPMF_Stream::~GPMF_Stream()
 	{
 		auto gs = reinterpret_cast<GPMF_stream *>(stream_);
 		GPMF_Free(gs);
+		delete(gs);
+		stream_ = nullptr;
+	}
+
+	bool
+	GPMF_Stream::resetState()
+	{
+		return GPMF_OK == GPMF_ResetState(
+			reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	bool
+	GPMF_Stream::validate(
+		gpt::GPMF_Levels level)
+	{
+		return GPMF_OK == GPMF_Validate(
+			reinterpret_cast<GPMF_stream *>(stream_),
+			toGPMF_LEVELS(level));
+	}
+
+	bool
+	GPMF_Stream::next(
+		gpt::GPMF_Levels level)
+	{
+		return GPMF_OK == GPMF_Next(
+			reinterpret_cast<GPMF_stream *>(stream_),
+			toGPMF_LEVELS(level));
+	}
+
+	bool
+	GPMF_Stream::findPrev(
+		FourCC fourCC,
+		gpt::GPMF_Levels level)
+	{
+		return GPMF_OK == GPMF_FindPrev(
+			reinterpret_cast<GPMF_stream *>(stream_),
+			fourCC.uint(),
+			toGPMF_LEVELS(level));
+	}
+
+	bool
+	GPMF_Stream::findNext(
+		FourCC fourCC,
+		gpt::GPMF_Levels level)
+	{
+		return GPMF_OK == GPMF_FindNext(
+			reinterpret_cast<GPMF_stream *>(stream_),
+			fourCC.uint(),
+			toGPMF_LEVELS(level));
+	}
+
+	bool
+	GPMF_Stream::seekToSamples()
+	{
+		return GPMF_OK == GPMF_SeekToSamples(
+			reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	FourCC
+	GPMF_Stream::key()
+	{
+		return GPMF_Key(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	char
+	GPMF_Stream::type()
+	{
+		return GPMF_Type(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	uint32_t
+	GPMF_Stream::structSize()
+	{
+		return GPMF_StructSize(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	uint32_t
+	GPMF_Stream::repeat()
+	{
+		return GPMF_Repeat(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	uint32_t
+	GPMF_Stream::payloadSampleCount()
+	{
+		return GPMF_PayloadSampleCount(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	uint32_t
+	GPMF_Stream::elementsInStruct()
+	{
+		return GPMF_ElementsInStruct(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	uint32_t
+	GPMF_Stream::rawDataSize()
+	{
+		return GPMF_RawDataSize(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	void *
+	GPMF_Stream::rawData()
+	{
+		return GPMF_RawData(reinterpret_cast<GPMF_stream *>(stream_));
 	}
 
 	GPMF_Stream::GPMF_Stream(
 		uint32_t *buffer,
 		uint32_t datasize)
-	 : stream_(nullptr)
+	 : stream_(new GPMF_stream)
 	{
 		auto gs = reinterpret_cast<GPMF_stream *>(stream_);
 		auto ret = GPMF_Init(gs, buffer, datasize);

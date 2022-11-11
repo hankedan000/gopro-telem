@@ -24,7 +24,7 @@ MP4_SourceTest::tearDown()
 }
 
 void
-MP4_SourceTest::basicTests()
+MP4_SourceTest::mp4SourceTests()
 {
 	gpt::MP4_Source mp4;
 
@@ -32,6 +32,15 @@ MP4_SourceTest::basicTests()
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(2.484,mp4.duration(),0.001);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(59.94,mp4.fps(),0.01);
 	CPPUNIT_ASSERT_EQUAL(150UL,mp4.frameCount());
+	CPPUNIT_ASSERT_EQUAL(3UL,mp4.payloadCount());
+}
+
+void
+MP4_SourceTest::payloadTests()
+{
+	gpt::MP4_Source mp4;
+
+	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
 	CPPUNIT_ASSERT_EQUAL(3UL,mp4.payloadCount());
 
 	for (size_t pIdx=0; pIdx<3; pIdx++)
@@ -52,6 +61,25 @@ MP4_SourceTest::basicTests()
 				CPPUNIT_ASSERT_DOUBLES_EQUAL(2.485,payload->outTime(),0.001);
 				break;
 		}
+	}
+}
+
+void
+MP4_SourceTest::streamTests()
+{
+	gpt::MP4_Source mp4;
+
+	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
+	CPPUNIT_ASSERT_EQUAL(3UL,mp4.payloadCount());
+
+	for (size_t pIdx=0; pIdx<3; pIdx++)
+	{
+		auto payload = mp4.getPayload(pIdx);
+		auto stream = payload->getStream();
+
+		CPPUNIT_ASSERT_EQUAL(true, stream->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+		CPPUNIT_ASSERT_EQUAL(true, stream->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+		printf("key = %s\n", stream->key().toString().c_str());
 	}
 }
 
