@@ -1,6 +1,6 @@
 #include "GoProTelemTest.h"
 
-#include "GoProTelem.h"
+#include "GoProTelem/GoProTelem.h"
 
 #include <sys/stat.h>
 #include <unistd.h>

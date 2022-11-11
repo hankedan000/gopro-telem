@@ -1,4 +1,4 @@
-#include "GoProTelem.h"
+#include "GoProTelem/GoProTelem.h"
 
 namespace gpt
 {
