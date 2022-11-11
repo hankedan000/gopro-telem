@@ -1,6 +1,6 @@
 # gpmf-parser
 add_library(
-	gpmf-parser
+	gpmf-parser STATIC
 		"${CMAKE_CURRENT_SOURCE_DIR}/gpmf-parser/GPMF_parser.c"
 		"${CMAKE_CURRENT_SOURCE_DIR}/gpmf-parser/GPMF_utils.c"
 )
@@ -13,7 +13,7 @@ set_target_properties(
 		PUBLIC_HEADER "${GPMF_PARSER_INCLUDE_FILES}"
 )
 add_library(
-	gpmf-mp4reader
+	gpmf-mp4reader STATIC
 		"${CMAKE_CURRENT_SOURCE_DIR}/gpmf-parser/demo/GPMF_mp4reader.c"
 )
 target_include_directories(gpmf-mp4reader PUBLIC "${CMAKE_CURRENT_SOURCE_DIR}/gpmf-parser/demo/")
