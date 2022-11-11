@@ -1,10 +1,10 @@
 cmake_minimum_required (VERSION 3.1)
 
-set(LIBNAME_ALL_UPPER "TEMPLATELIB")
-# used for things like header install dir '/usr/lib/include/templatelib'
-set(LIBNAME_ALL_LOWER "templatelib")
+set(LIBNAME_ALL_UPPER "GOPRO_TELEM")
+# used for things like header install dir '/usr/lib/include/gopro_telem'
+set(LIBNAME_ALL_LOWER "gopro_telem")
 
-project(TemplateLibProject VERSION 1.0.0)
+project(GoProTelem VERSION 1.0.0)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 

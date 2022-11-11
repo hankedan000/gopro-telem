@@ -1,7 +1,7 @@
-add_executable(MathTest MathTest.cpp)
-add_test(NAME MathTest COMMAND MathTest)
+add_executable(GoProTelemTest GoProTelemTest.cpp)
+add_test(NAME GoProTelemTest COMMAND GoProTelemTest)
 
 target_link_libraries(
-	MathTest
-		Math
+	GoProTelemTest
+		GoProTelem
 		${CPPUNIT_LIBRARIES})
