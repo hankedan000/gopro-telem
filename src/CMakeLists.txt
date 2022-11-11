@@ -1,4 +1,9 @@
-add_library(GoProTelem GoProTelem.cpp)
+add_library(GoProTelem
+	GoProTelem.cpp
+	GPMF_Payload.cpp
+	GPMF_Stream.cpp
+	FourCC.cpp
+	MP4_Source.cpp)
 
 # add namespaced alias so that library target is referencable similar
 # to how it would when included from exports. this enabled project

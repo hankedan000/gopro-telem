@@ -72,15 +72,23 @@ MP4_SourceTest::streamTests()
 	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
 	CPPUNIT_ASSERT_EQUAL(3UL,mp4.payloadCount());
 
-	for (size_t pIdx=0; pIdx<3; pIdx++)
-	{
-		auto payload = mp4.getPayload(pIdx);
-		auto stream = payload->getStream();
+	auto pl0 = mp4.getPayload(0);
+	auto stream0 = pl0->getStream();
+	CPPUNIT_ASSERT_EQUAL(true, stream0->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(true, stream0->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream0->key());
 
-		CPPUNIT_ASSERT_EQUAL(true, stream->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
-		CPPUNIT_ASSERT_EQUAL(true, stream->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
-		printf("key = %s\n", stream->key().toString().c_str());
-	}
+	auto pl1 = mp4.getPayload(1);
+	auto stream1 = pl1->getStream();
+	CPPUNIT_ASSERT_EQUAL(true, stream1->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(true, stream1->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream1->key());
+
+	auto pl2 = mp4.getPayload(2);
+	auto stream2 = pl2->getStream();
+	CPPUNIT_ASSERT_EQUAL(true, stream2->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(true, stream2->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream2->key());
 }
 
 int main()
