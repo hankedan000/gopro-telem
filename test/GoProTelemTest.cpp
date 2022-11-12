@@ -24,22 +24,50 @@ GoProTelemTest::tearDown()
 }
 
 void
+GoProTelemTest::getAcclSamples()
+{
+	gpt::MP4_Source mp4;
+	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
+
+	const double sampRate = 200.0;// TODO get from library method
+	const double samplDt = 1.0 / sampRate;
+
+	auto samps = gpt::getAcclSamples(mp4);
+	CPPUNIT_ASSERT_EQUAL(494UL, samps.size());
+
+	double prevTimeOffset = -1;
+	for (const auto &samp : samps)
+	{
+		if (prevTimeOffset >= 0.0)
+		{
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(
+				samplDt,
+				(samp.t_offset - prevTimeOffset),
+				0.0001);
+		}
+		prevTimeOffset = samp.t_offset;
+	}
+}
+
+void
 GoProTelemTest::getGPS_Samples()
 {
 	gpt::MP4_Source mp4;
 	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
 
-	auto gpsSamps = gpt::getGPS_Samples(mp4);
-	CPPUNIT_ASSERT_EQUAL(45UL, gpsSamps.size());
+	const double sampRate = 18.0;// TODO get from library method
+	const double samplDt = 1.0 / sampRate;
+
+	auto samps = gpt::getGPS_Samples(mp4);
+	CPPUNIT_ASSERT_EQUAL(45UL, samps.size());
 
 	double prevTimeOffset = -1;
-	for (const auto &samp : gpsSamps)
+	for (const auto &samp : samps)
 	{
-		printf("%s\n", samp.toString().c_str());
 		if (prevTimeOffset >= 0.0)
 		{
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(
-				0.055,
+				samplDt,
 				(samp.t_offset - prevTimeOffset),
 				0.002);
 		}

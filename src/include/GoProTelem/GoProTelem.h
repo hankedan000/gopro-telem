@@ -19,4 +19,12 @@ namespace gpt
 	getGPS_Samples(
 		MP4_Source &mp4);
 
+	std::vector<AcclTimedSample>
+	getPayloadAcclSamples(
+		GPMF_PayloadPtr pl);
+
+	std::vector<AcclTimedSample>
+	getAcclSamples(
+		MP4_Source &mp4);
+
 }

@@ -19,6 +19,10 @@ namespace gpt
 	{
 	public:
 		float x,y,z;
+
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class CoordLL
@@ -33,6 +37,10 @@ namespace gpt
 
 	class AcclSample : public FloatXYZ
 	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class GyroSample : public FloatXYZ
@@ -52,8 +60,12 @@ namespace gpt
 			bool withBraces = false) const;
 	};
 
-	class AcclTimedSample : public FloatXYZ, public TimedSample
+	class AcclTimedSample : public AcclSample, public TimedSample
 	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class GyroTimedSample : public GyroSample, public TimedSample
