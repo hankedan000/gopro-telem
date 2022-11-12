@@ -1,9 +1,7 @@
 #include "GoProTelem/MP4_Source.h"
 
 #include <stdexcept>
-// #include "GPMF_parser.h"
 #include "GPMF_mp4reader.h"
-// #include "GPMF_utils.h"
 
 namespace gpt
 {

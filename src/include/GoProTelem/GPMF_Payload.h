@@ -2,7 +2,7 @@
 
 #include <memory>
 
-#include "GoProTelem/GoProTelem_Types.h"
+#include "GoProTelem/Types.h"
 #include "GoProTelem/GPMF_Stream.h"
 
 namespace gpt

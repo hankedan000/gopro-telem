@@ -1,10 +1,11 @@
 #pragma once
 
 #include <memory>
+#include <stack>
 #include <string>
 
 #include "GoProTelem/FourCC.h"
-#include "GoProTelem/GoProTelem_Types.h"
+#include "GoProTelem/Types.h"
 
 namespace gpt
 {
@@ -38,6 +39,8 @@ namespace gpt
 	const FourCC GPMF_KEY_REMARK =			MAKE_FOURCC_ID('R','M','R','K');//RMRK - adding comments to the bitstream (debugging)
 	const FourCC GPMF_KEY_END =				0;                      //(null)
 
+	const FourCC GPMF_KEY_GPS5 =			MAKE_FOURCC_ID('G','P','S','5');//GPS5 - GPS samples data
+
 	// forward declarations
 	class GPMF_Payload;
 	class GPMF_Stream;
@@ -49,9 +52,18 @@ namespace gpt
 	public:
 		~GPMF_Stream();
 
+		std::string
+		strmToString();
+
 		// Prepare GPMF data methods
 		bool
 		resetState();
+
+		void
+		pushState();
+
+		void
+		popState();
 
 		// Validate GPMF structure from the current location
 		bool
@@ -86,6 +98,13 @@ namespace gpt
 		uint32_t rawDataSize();			//return the data size for the current GPMF KLV 
 		void *   rawData();				//return a pointer the KLV data (which is Bigendian if the type is known.)
 
+		bool
+		getScaledDataDoubles(
+			void *buffer,
+			uint32_t buffersize,
+			uint32_t sample_offset,
+			uint32_t read_samples);
+
 	private:
 		// only allow construction by the GPMF_Payload class
 		friend class GPMF_Payload;
@@ -104,6 +123,9 @@ namespace gpt
 	private:
 		// can be casted to a (GPMF_stream *)
 		void *stream_;
+
+		// a stack of (GPMF_stream *)
+		std::stack<void *> stateStack_;
 
 	};
 

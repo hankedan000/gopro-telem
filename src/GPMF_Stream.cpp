@@ -1,5 +1,6 @@
 #include "GoProTelem/GPMF_Stream.h"
 
+#include <sstream>
 #include <stdexcept>
 #include "GPMF_parser.h"
 #include "GPMF_utils.h"
@@ -31,11 +32,71 @@ namespace gpt
 		stream_ = nullptr;
 	}
 
+	std::string
+	GPMF_Stream::strmToString()
+	{
+		if (key() != gpt::GPMF_KEY_STREAM)
+		{
+			return "**NOT A STRM**";
+		}
+
+		std::stringstream ss;
+		pushState();
+		if (seekToSamples())
+		{
+			FourCC key = this->key();
+			char type = this->type();
+			uint32_t elements = elementsInStruct();
+			uint32_t samples = payloadSampleCount();
+			if (samples)
+			{
+				ss << "STRM of " << key.toString() << " of type " << type << " with " << samples << " samples";
+				if (elements > 1)
+				{
+					ss << " -- " << elements << " elements per sample";
+				}
+			}
+		}
+		popState();
+
+		return ss.str();
+	}
+
 	bool
 	GPMF_Stream::resetState()
 	{
 		return GPMF_OK == GPMF_ResetState(
 			reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	void
+	GPMF_Stream::pushState()
+	{
+		auto currState = reinterpret_cast<GPMF_stream *>(stream_);
+		GPMF_stream *state = new GPMF_stream;
+		if (GPMF_OK == GPMF_CopyState(currState,state))
+		{
+			stateStack_.push(state);
+		}
+		else
+		{
+			delete(state);
+		}
+	}
+
+	void
+	GPMF_Stream::popState()
+	{
+		if (stateStack_.empty())
+		{
+			return;
+		}
+
+		auto currState = reinterpret_cast<GPMF_stream *>(stream_);
+		auto state = reinterpret_cast<GPMF_stream *>(stateStack_.top());
+		stateStack_.pop();
+		int copyRet = GPMF_CopyState(state,currState);
+		delete(state);
 	}
 
 	bool
@@ -131,6 +192,22 @@ namespace gpt
 	GPMF_Stream::rawData()
 	{
 		return GPMF_RawData(reinterpret_cast<GPMF_stream *>(stream_));
+	}
+
+	bool
+	GPMF_Stream::getScaledDataDoubles(
+		void *buffer,
+		uint32_t buffersize,
+		uint32_t sample_offset,
+		uint32_t read_samples)
+	{
+		return GPMF_OK == GPMF_ScaledData(
+			reinterpret_cast<GPMF_stream *>(stream_),
+			buffer,
+			buffersize,
+			sample_offset,
+			read_samples,
+			GPMF_TYPE_DOUBLE);
 	}
 
 	GPMF_Stream::GPMF_Stream(
