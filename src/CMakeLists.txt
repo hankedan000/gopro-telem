@@ -2,6 +2,7 @@ add_library(GoProTelem
 	GoProTelem.cpp
 
 	FourCC.cpp
+	GPMF_ErrorUtils.cpp
 	GPMF_Payload.cpp
 	GPMF_Stream.cpp
 	MP4_Source.cpp
