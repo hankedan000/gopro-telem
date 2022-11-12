@@ -39,4 +39,33 @@ namespace gpt
 		const GPS_Sample &b,
 		double ratio);
 
+	/**
+	 * Linear interpolates between two TimeSample classes
+	 * 
+	 * @param[out] out
+	 * the sample type to populate the interpolated result into
+	 * 
+	 * @param[in] a
+	 * the earlier sample to interpolate between
+	 * 
+	 * @param[in] b
+	 * the later sample to interpolate between
+	 * 
+	 * @param[in] timePoint
+	 * the time to interpolate to (relative to 'a' and 'b')
+	 */
+	template <class NonTimedSample_T, class TimedSample_T>
+	inline
+	void
+	lerpTimedSample(
+		NonTimedSample_T &out,
+		const TimedSample_T &a,
+		const TimedSample_T &b,
+		double timePoint)
+	{
+		const double dt = b.t_offset - a.t_offset;
+		const double ratio = (timePoint - a.t_offset) / dt;
+		lerp(out, a, b, ratio);
+	}
+
 }

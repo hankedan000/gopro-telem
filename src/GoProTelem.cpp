@@ -189,76 +189,80 @@ namespace gpt
 			auto &sampOut = sampsOut.at(ff);
 			sampOut.t_offset = ff * frameDt;
 
-			// interpolate GPS samples data
-			bool gpsFound = false;
-			while (true)
+			// GPS sample interpolation
 			{
-				auto nextIdx = gpsIdx + 1;
-				if (nextIdx >= (gpsSamps.size() - 1))
+				// find next two samples to interpolate between
+				bool gpsFound = false;
+				while (true)
 				{
-					break;
+					auto nextIdx = gpsIdx + 1;
+					if (nextIdx >= (gpsSamps.size() - 1))
+					{
+						break;
+					}
+
+					if (gpsSamps.at(gpsIdx).t_offset <= sampOut.t_offset &&
+						sampOut.t_offset <= gpsSamps.at(nextIdx).t_offset)
+					{
+						gpsFound = true;
+						break;
+					}
+					gpsIdx++;
 				}
 
-				if (gpsSamps.at(gpsIdx).t_offset <= sampOut.t_offset &&
-					sampOut.t_offset <= gpsSamps.at(nextIdx).t_offset)
+				// perform interpolation
+				auto &sampA = gpsSamps.at(gpsIdx);
+				auto &sampB = gpsSamps.at(gpsIdx+1);
+				if (gpsFound)
 				{
-					gpsFound = true;
-					break;
+					lerpTimedSample(sampOut.gps, sampA, sampB, sampOut.t_offset);
 				}
-				gpsIdx++;
-			}
-
-			auto &gpsA = gpsSamps.at(gpsIdx);
-			auto &gpsB = gpsSamps.at(gpsIdx+1);
-			if (gpsFound)
-			{
-				const double gpsDt = gpsB.t_offset - gpsA.t_offset;
-				const double ratio = (sampOut.t_offset - gpsA.t_offset) / gpsDt;
-				lerp(sampOut.gps, gpsA, gpsB, ratio);
-			}
-			else if (gpsIdx == 0)
-			{
-				sampOut.gps = gpsA;
-			}
-			else
-			{
-				sampOut.gps = gpsB;
-			}
-
-			// interpolate ACCL samples data
-			bool acclFound = false;
-			while (true)
-			{
-				auto nextIdx = acclIdx + 1;
-				if (nextIdx >= (acclSamps.size() - 1))
+				else if (gpsIdx == 0)
 				{
-					break;
+					sampOut.gps = sampA;
 				}
-
-				if (acclSamps.at(acclIdx).t_offset <= sampOut.t_offset &&
-					sampOut.t_offset <= acclSamps.at(nextIdx).t_offset)
+				else
 				{
-					acclFound = true;
-					break;
+					sampOut.gps = sampB;
 				}
-				acclIdx++;
 			}
 
-			auto &acclA = acclSamps.at(acclIdx);
-			auto &acclB = acclSamps.at(acclIdx+1);
-			if (acclFound)
+			// accelerometer sample interpolation
 			{
-				const double acclDt = acclB.t_offset - acclA.t_offset;
-				const double ratio = (sampOut.t_offset - acclA.t_offset) / acclDt;
-				lerp(sampOut.accl, acclA, acclB, ratio);
-			}
-			else if (gpsIdx == 0)
-			{
-				sampOut.accl = acclA;
-			}
-			else
-			{
-				sampOut.accl = acclB;
+				// find next two samples to interpolate between
+				bool acclFound = false;
+				while (true)
+				{
+					auto nextIdx = acclIdx + 1;
+					if (nextIdx >= (acclSamps.size() - 1))
+					{
+						break;
+					}
+
+					if (acclSamps.at(acclIdx).t_offset <= sampOut.t_offset &&
+						sampOut.t_offset <= acclSamps.at(nextIdx).t_offset)
+					{
+						acclFound = true;
+						break;
+					}
+					acclIdx++;
+				}
+
+				// perform interpolation
+				auto &sampA = acclSamps.at(acclIdx);
+				auto &sampB = acclSamps.at(acclIdx+1);
+				if (acclFound)
+				{
+					lerpTimedSample(sampOut.accl, sampA, sampB, sampOut.t_offset);
+				}
+				else if (gpsIdx == 0)
+				{
+					sampOut.accl = sampA;
+				}
+				else
+				{
+					sampOut.accl = sampB;
+				}
 			}
 		}
 
