@@ -77,18 +77,39 @@ MP4_SourceTest::streamTests()
 	CPPUNIT_ASSERT_EQUAL(true, stream0->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(true, stream0->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream0->key());
+	CPPUNIT_ASSERT_EQUAL(1U, stream0->structSize());
 
 	auto pl1 = mp4.getPayload(1);
 	auto stream1 = pl1->getStream();
 	CPPUNIT_ASSERT_EQUAL(true, stream1->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(true, stream1->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream1->key());
+	CPPUNIT_ASSERT_EQUAL(1U, stream0->structSize());
 
 	auto pl2 = mp4.getPayload(2);
 	auto stream2 = pl2->getStream();
 	CPPUNIT_ASSERT_EQUAL(true, stream2->validate(gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(true, stream2->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
 	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream2->key());
+	CPPUNIT_ASSERT_EQUAL(1U, stream0->structSize());
+
+	// test stream statePush/Pop methods
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream2->key());
+	stream2->pushState();
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream2->key());
+	stream2->resetState();
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_DEVICE, stream2->key());
+	stream2->popState();
+	CPPUNIT_ASSERT_EQUAL(gpt::GPMF_KEY_STREAM, stream2->key());
+
+	// test strmToString() and stream traversal
+	CPPUNIT_ASSERT_EQUAL(
+		std::string("STRM of ACCL of type s with 98 samples -- 3 elements per sample"),
+		stream2->strmToString());
+	CPPUNIT_ASSERT_EQUAL(true, stream2->findNext(gpt::GPMF_KEY_STREAM, gpt::GPMF_Levels::GPMF_RECURSE_LEVELS));
+	CPPUNIT_ASSERT_EQUAL(
+		std::string("STRM of GYRO of type s with 98 samples -- 3 elements per sample"),
+		stream2->strmToString());
 }
 
 int main()

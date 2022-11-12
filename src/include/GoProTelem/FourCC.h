@@ -41,6 +41,11 @@ namespace gpt
 		const FourCC &rhs);
 
 	bool
+	operator!=(
+		const FourCC &lhs,
+		const FourCC &rhs);
+
+	bool
 	operator<(
 		const FourCC &lhs,
 		const FourCC &rhs);

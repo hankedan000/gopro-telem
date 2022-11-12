@@ -3,7 +3,7 @@
 #include <memory>
 #include <string>
 
-#include "GoProTelem/GoProTelem_Types.h"
+#include "GoProTelem/Types.h"
 #include "GoProTelem/GPMF_Payload.h"
 
 namespace gpt

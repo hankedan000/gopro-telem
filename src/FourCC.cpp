@@ -51,6 +51,14 @@ namespace gpt
 	}
 
 	bool
+	operator!=(
+		const FourCC &lhs,
+		const FourCC &rhs)
+	{
+		return ! (lhs == rhs);
+	}
+
+	bool
 	operator<(
 		const FourCC &lhs,
 		const FourCC &rhs)

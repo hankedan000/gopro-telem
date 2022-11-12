@@ -7,29 +7,65 @@ namespace gpt
 
 	class TimedSample
 	{
+	public:
 		double t_offset;
+
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class FloatXYZ
 	{
+	public:
 		float x,y,z;
 	};
 
 	class CoordLL
 	{
-		float lat,lon;
+	public:
+		double lat,lon;// deg
+
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
-	class AcclSample : public TimedSample, FloatXYZ
+	class AcclSample : public FloatXYZ
 	{
 	};
 
-	class GyroSample : public TimedSample, FloatXYZ
+	class GyroSample : public FloatXYZ
 	{
 	};
 
-	class GPS_Sample : public TimedSample, CoordLL
+	class GPS_Sample
 	{
+	public:
+		CoordLL coord;
+		double altitude;// m
+		double speed2D; // m/s
+		double speed3D; // m/s
+
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
+	class AcclTimedSample : public FloatXYZ, public TimedSample
+	{
+	};
+
+	class GyroTimedSample : public GyroSample, public TimedSample
+	{
+	};
+
+	class GPS_TimedSample : public GPS_Sample, public TimedSample
+	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	const size_t SAMPLE_INFO_HAS_ACCL = 1;
@@ -39,9 +75,9 @@ namespace gpt
 
 	class CombinedSample : public TimedSample
 	{
-		FloatXYZ accl;
-		FloatXYZ gyro;
-		CoordLL gps_coord;
+		AcclSample accl;
+		GyroSample gyro;
+		GPS_Sample gps;
 	};
 
 }
