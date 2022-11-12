@@ -4,6 +4,7 @@
 #include "GPMF_parser.h"
 #include "GPMF_mp4reader.h"
 #include "GPMF_utils.h"
+#include "GoProTelem/SampleMath.h"
 
 namespace gpt
 {
@@ -132,7 +133,7 @@ namespace gpt
 					auto &sampOut = sampsOut.at(sampIdx);
 					sampOut.t_offset  = inTime + samp_dt * sampIdx;
 					sampOut.y = tmpbuffer[ss*elements+0];
-					sampOut.x = tmpbuffer[ss*elements+1];
+					sampOut.x = tmpbuffer[ss*elements+1];// GoPro docs says this is -y
 					sampOut.z = tmpbuffer[ss*elements+2];
 					sampIdx++;
 				}
@@ -157,6 +158,108 @@ namespace gpt
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadAcclSamples(payloadPtr);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
+		}
+
+		return sampsOut;
+	}
+
+	std::vector<CombinedSample>
+	getCombinedSamples(
+		MP4_Source &mp4)
+	{
+		const size_t frameCount = mp4.frameCount();
+		const double duration = mp4.duration();
+		if (frameCount <= 1)
+		{
+			throw std::runtime_error(
+				"not enough frames to combine samples with. frameCount = " + std::to_string(frameCount));
+		}
+		const double frameDt = duration / (frameCount - 1);
+
+		std::vector<CombinedSample> sampsOut;
+		sampsOut.resize(frameCount);
+
+		const auto gpsSamps = getGPS_Samples(mp4);
+		const auto acclSamps = getAcclSamples(mp4);
+
+		size_t gpsIdx = 0;
+		size_t acclIdx = 0;
+		for (size_t ff=0; ff<frameCount; ff++)
+		{
+			auto &sampOut = sampsOut.at(ff);
+			sampOut.t_offset = ff * frameDt;
+
+			// interpolate GPS samples data
+			bool gpsFound = false;
+			while (true)
+			{
+				auto nextIdx = gpsIdx + 1;
+				if (nextIdx >= (gpsSamps.size() - 1))
+				{
+					break;
+				}
+
+				if (gpsSamps.at(gpsIdx).t_offset <= sampOut.t_offset &&
+					sampOut.t_offset <= gpsSamps.at(nextIdx).t_offset)
+				{
+					gpsFound = true;
+					break;
+				}
+				gpsIdx++;
+			}
+
+			auto &gpsA = gpsSamps.at(gpsIdx);
+			auto &gpsB = gpsSamps.at(gpsIdx+1);
+			if (gpsFound)
+			{
+				const double gpsDt = gpsB.t_offset - gpsA.t_offset;
+				const double ratio = (sampOut.t_offset - gpsA.t_offset) / gpsDt;
+				lerp(sampOut.gps, gpsA, gpsB, ratio);
+			}
+			else if (gpsIdx == 0)
+			{
+				sampOut.gps = gpsA;
+			}
+			else
+			{
+				sampOut.gps = gpsB;
+			}
+
+			// interpolate ACCL samples data
+			bool acclFound = false;
+			while (true)
+			{
+				auto nextIdx = acclIdx + 1;
+				if (nextIdx >= (acclSamps.size() - 1))
+				{
+					break;
+				}
+
+				if (acclSamps.at(acclIdx).t_offset <= sampOut.t_offset &&
+					sampOut.t_offset <= acclSamps.at(nextIdx).t_offset)
+				{
+					acclFound = true;
+					break;
+				}
+				acclIdx++;
+			}
+
+			auto &acclA = acclSamps.at(acclIdx);
+			auto &acclB = acclSamps.at(acclIdx+1);
+			if (acclFound)
+			{
+				const double acclDt = acclB.t_offset - acclA.t_offset;
+				const double ratio = (sampOut.t_offset - acclA.t_offset) / acclDt;
+				lerp(sampOut.accl, acclA, acclB, ratio);
+			}
+			else if (gpsIdx == 0)
+			{
+				sampOut.accl = acclA;
+			}
+			else
+			{
+				sampOut.accl = acclB;
+			}
 		}
 
 		return sampsOut;

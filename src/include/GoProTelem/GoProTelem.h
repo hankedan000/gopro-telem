@@ -27,4 +27,8 @@ namespace gpt
 	getAcclSamples(
 		MP4_Source &mp4);
 
+	std::vector<CombinedSample>
+	getCombinedSamples(
+		MP4_Source &mp4);
+
 }

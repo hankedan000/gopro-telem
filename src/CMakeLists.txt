@@ -6,6 +6,7 @@ add_library(GoProTelem
 	GPMF_Payload.cpp
 	GPMF_Stream.cpp
 	MP4_Source.cpp
+	SampleMath.cpp
 	SampleTypes.cpp)
 
 # add namespaced alias so that library target is referencable similar
