@@ -13,3 +13,10 @@ target_link_libraries(
 	MP4_SourceTest
 		GoProTelem
 		${CPPUNIT_LIBRARIES})
+
+add_executable(SampleMathTest SampleMathTest.cpp)
+add_test(NAME SampleMathTest COMMAND SampleMathTest)
+target_link_libraries(
+	SampleMathTest
+		GoProTelem
+		${CPPUNIT_LIBRARIES})

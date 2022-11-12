@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include "GoProTelem/SampleTypes.h"
 
 namespace gpt
@@ -38,6 +40,34 @@ namespace gpt
 		const GPS_Sample &a,
 		const GPS_Sample &b,
 		double ratio);
+
+	template <class TimedSample_T>
+	inline
+	bool
+	findLerpIndex(
+		size_t &index,
+		const std::vector<TimedSample_T> &sampVec,
+		double searchTime)
+	{
+		bool found = false;
+		while (true)
+		{
+			auto nextIdx = index + 1;
+			if (nextIdx > (sampVec.size() - 1))
+			{
+				break;
+			}
+
+			if (sampVec.at(index).t_offset <= searchTime &&
+				searchTime <= sampVec.at(nextIdx).t_offset)
+			{
+				found = true;
+				break;
+			}
+			index++;
+		}
+		return found;
+	}
 
 	/**
 	 * Linear interpolates between two TimeSample classes
