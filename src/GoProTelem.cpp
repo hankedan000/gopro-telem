@@ -192,76 +192,44 @@ namespace gpt
 			// GPS sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool gpsFound = false;
-				while (true)
-				{
-					auto nextIdx = gpsIdx + 1;
-					if (nextIdx >= (gpsSamps.size() - 1))
-					{
-						break;
-					}
-
-					if (gpsSamps.at(gpsIdx).t_offset <= sampOut.t_offset &&
-						sampOut.t_offset <= gpsSamps.at(nextIdx).t_offset)
-					{
-						gpsFound = true;
-						break;
-					}
-					gpsIdx++;
-				}
+				bool gpsFound = findLerpIndex(gpsIdx,gpsSamps,sampOut.t_offset);
 
 				// perform interpolation
-				auto &sampA = gpsSamps.at(gpsIdx);
-				auto &sampB = gpsSamps.at(gpsIdx+1);
 				if (gpsFound)
 				{
+					auto &sampA = gpsSamps.at(gpsIdx);
+					auto &sampB = gpsSamps.at(gpsIdx+1);
 					lerpTimedSample(sampOut.gps, sampA, sampB, sampOut.t_offset);
 				}
 				else if (gpsIdx == 0)
 				{
-					sampOut.gps = sampA;
+					sampOut.gps = gpsSamps.at(gpsIdx);
 				}
 				else
 				{
-					sampOut.gps = sampB;
+					sampOut.gps = gpsSamps.at(gpsSamps.size() - 1);
 				}
 			}
 
 			// accelerometer sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool acclFound = false;
-				while (true)
-				{
-					auto nextIdx = acclIdx + 1;
-					if (nextIdx >= (acclSamps.size() - 1))
-					{
-						break;
-					}
-
-					if (acclSamps.at(acclIdx).t_offset <= sampOut.t_offset &&
-						sampOut.t_offset <= acclSamps.at(nextIdx).t_offset)
-					{
-						acclFound = true;
-						break;
-					}
-					acclIdx++;
-				}
+				bool acclFound = findLerpIndex(acclIdx,acclSamps,sampOut.t_offset);
 
 				// perform interpolation
-				auto &sampA = acclSamps.at(acclIdx);
-				auto &sampB = acclSamps.at(acclIdx+1);
 				if (acclFound)
 				{
+					auto &sampA = acclSamps.at(acclIdx);
+					auto &sampB = acclSamps.at(acclIdx+1);
 					lerpTimedSample(sampOut.accl, sampA, sampB, sampOut.t_offset);
 				}
 				else if (acclIdx == 0)
 				{
-					sampOut.accl = sampA;
+					sampOut.accl = acclSamps.at(acclIdx);
 				}
 				else
 				{
-					sampOut.accl = sampB;
+					sampOut.accl = acclSamps.at(acclSamps.size() - 1);
 				}
 			}
 		}

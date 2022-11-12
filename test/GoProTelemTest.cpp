@@ -99,6 +99,10 @@ GoProTelemTest::getCombinedSamples()
 				0.001);
 		}
 		prevTimeOffset = samp.t_offset;
+
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.x,0.3);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.y,0.3);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.accl.z,0.1);
 	}
 }
 
