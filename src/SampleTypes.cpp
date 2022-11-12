@@ -19,6 +19,20 @@ namespace gpt
 	}
 
 	std::string
+	FloatXYZ::toString(
+			bool withBraces) const
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			std::fixed << std::setprecision(3) << std::showpos <<
+			"x: " << x << ", "
+			"y: " << y << ", "
+			"z: " << z <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
 	CoordLL::toString(
 			bool withBraces) const
 	{
@@ -28,6 +42,13 @@ namespace gpt
 			"lon: " << lon <<
 			(withBraces ? " }" : "");
 		return ss.str();
+	}
+
+	std::string
+	AcclSample::toString(
+			bool withBraces) const
+	{
+		return FloatXYZ::toString(withBraces);
 	}
 
 	std::string
@@ -53,6 +74,18 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			TimedSample::toString() << ", " <<
 			GPS_Sample::toString() <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
+	AcclTimedSample::toString(
+			bool withBraces) const
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			TimedSample::toString() << ", " <<
+			AcclSample::toString() <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
