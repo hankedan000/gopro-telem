@@ -255,7 +255,7 @@ namespace gpt
 				{
 					lerpTimedSample(sampOut.accl, sampA, sampB, sampOut.t_offset);
 				}
-				else if (gpsIdx == 0)
+				else if (acclIdx == 0)
 				{
 					sampOut.accl = sampA;
 				}
