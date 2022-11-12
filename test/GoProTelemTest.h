@@ -9,6 +9,7 @@ class GoProTelemTest : public CppUnit::TestFixture
 	CPPUNIT_TEST_SUITE(GoProTelemTest);
 	CPPUNIT_TEST(getAcclSamples);
 	CPPUNIT_TEST(getGPS_Samples);
+	CPPUNIT_TEST(getCombinedSamples);
 	CPPUNIT_TEST_SUITE_END();
 
 public:
@@ -19,6 +20,7 @@ public:
 protected:
 	void getAcclSamples();
 	void getGPS_Samples();
+	void getCombinedSamples();
 
 private:
 

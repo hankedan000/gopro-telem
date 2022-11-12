@@ -87,9 +87,14 @@ namespace gpt
 
 	class CombinedSample : public TimedSample
 	{
+	public:
 		AcclSample accl;
 		GyroSample gyro;
 		GPS_Sample gps;
+
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 }

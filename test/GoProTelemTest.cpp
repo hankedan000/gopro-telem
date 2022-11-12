@@ -75,6 +75,33 @@ GoProTelemTest::getGPS_Samples()
 	}
 }
 
+void
+GoProTelemTest::getCombinedSamples()
+{
+	gpt::MP4_Source mp4;
+	CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_27K_60FPS_LIN_FILEPATH));
+
+	const size_t frameCount = mp4.frameCount();
+	const double sampRate = mp4.fps();
+	const double samplDt = 1.0 / sampRate;
+
+	auto samps = gpt::getCombinedSamples(mp4);
+	CPPUNIT_ASSERT_EQUAL(frameCount, samps.size());
+
+	double prevTimeOffset = -1;
+	for (const auto &samp : samps)
+	{
+		if (prevTimeOffset >= 0.0)
+		{
+			CPPUNIT_ASSERT_DOUBLES_EQUAL(
+				samplDt,
+				(samp.t_offset - prevTimeOffset),
+				0.001);
+		}
+		prevTimeOffset = samp.t_offset;
+	}
+}
+
 int main()
 {
 	CppUnit::TextUi::TestRunner runner;

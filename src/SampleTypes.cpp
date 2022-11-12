@@ -90,4 +90,16 @@ namespace gpt
 		return ss.str();
 	}
 
+	std::string
+	CombinedSample::toString(
+		bool withBraces) const
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ \n" : "") <<
+			(withBraces ? "  " : "") << TimedSample::toString() << ", " << std::endl <<
+			(withBraces ? "  " : "") << "accl: " << accl.toString(true) << std::endl <<
+			(withBraces ? "  " : "") << "gps: " << gps.toString(true) <<
+			(withBraces ? "\n}" : "");
+		return ss.str();
+	}
 }
