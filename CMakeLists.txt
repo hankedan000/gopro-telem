@@ -8,9 +8,6 @@ project(GoProTelem VERSION 1.0.0)
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
-# Add modules to the CMAKE_MODULE_PATH
-list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake/")
-
 # build a multi-arch tuple for installing (ex. "x86_64-linux-gnu")
 string(TOLOWER ${CMAKE_SYSTEM_NAME} SYSTEM_NAME_LOWER)
 string(TOLOWER ${CMAKE_CXX_COMPILER_ID} COMPILER_NAME_LOWER)
