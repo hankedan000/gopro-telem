@@ -99,12 +99,36 @@ namespace gpt
 		uint32_t rawDataSize();			//return the data size for the current GPMF KLV 
 		void *   rawData();				//return a pointer the KLV data (which is Bigendian if the type is known.)
 
+		/**
+		 * Return the total size of the current KLV in bytes
+		 * 
+		 * FourCC (Key) - 32bits
+		 * Type-Size-Repeat (Length) - 32bits
+		 * Raw data (Value) - 32bit aligned (structure size * repeat)
+		 */
+		size_t
+		klvTotalSizePadded();
+
 		bool
 		getScaledDataDoubles(
 			void *buffer,
 			uint32_t buffersize,
 			uint32_t sample_offset,
 			uint32_t read_samples);
+
+		/**
+		 * @return
+		 * a string representing the current KLV
+		 * 
+		 * FourCC (Key) Type-Size-Repeat (Length) Raw Data (Value)
+		 * 
+		 * Examples:
+		 *    "DEVC null 4 7"
+		 *    "DVID L 4 1 0x1001"
+		 *    "DVNM c 1 6 Camera"
+		 */
+		std::string
+		klvToString();
 
 	private:
 		// only allow construction by the GPMF_Payload class
