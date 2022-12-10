@@ -1,5 +1,7 @@
 #include "GoProTelem/GPMF_Payload.h"
 
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include "GPMF_parser.h"
 #include "GPMF_mp4reader.h"
@@ -7,6 +9,27 @@
 
 namespace gpt
 {
+
+	std::string
+	PayloadSensorInfo::toString(
+		const std::string &tabStr) const
+	{
+		std::stringstream ss;
+        ss              << tabStr << "fourCC:           " << fourCC.toString();
+        ss << std::endl << tabStr << "name:             " << name;
+        ss << std::endl << tabStr << "samplesInPayload: " << samplesInPayload;
+        ss << std::endl << tabStr << "totalSamples:     " << totalSamples;
+        ss << std::endl << tabStr << "measuredRate:     " << std::fixed << std::setprecision(3) << measuredRate_hz << " (Hz)";
+        if (hasTemperature)
+        {
+            ss << std::endl << tabStr << "temperature:      " << temperature_c << " (C)";
+        }
+        if ( ! siUnit.empty())
+        {
+            ss << std::endl << tabStr << "siUnit:           " << siUnit;
+        }
+		return ss.str();
+	}
 
 	GPMF_Payload::~GPMF_Payload()
 	{
@@ -34,6 +57,59 @@ namespace gpt
 	GPMF_Payload::getStream()
 	{
 		return GPMF_StreamPtr(new GPMF_Stream(payloadData_, payloadSize_));
+	}
+
+	bool
+	GPMF_Payload::getSensorInfo(
+		FourCC sensor,
+		PayloadSensorInfo &sensorInfo)
+	{
+		sensorInfo.fourCC = sensor;
+
+		auto stream = getStream();
+		if ( ! stream->findNext(sensor,GPMF_Levels::GPMF_RECURSE_LEVELS))
+		{
+			return false;
+		}
+
+		sensorInfo.samplesInPayload = stream->repeat();
+		if (sensorInfo.samplesInPayload > 1)
+		{
+			double duration = outTime() - inTime();
+			sensorInfo.measuredRate_hz = (sensorInfo.samplesInPayload - 1) / duration;
+		}
+
+		stream->pushState();
+		if (stream->findPrev(GPMF_KEY_STREAM_NAME,GPMF_Levels::GPMF_CURRENT_LEVEL))
+		{
+			sensorInfo.name = stream->readString();
+		}
+		stream->popState();
+
+		stream->pushState();
+		if (stream->findPrev(GPMF_KEY_TOTAL_SAMPLES,GPMF_Levels::GPMF_CURRENT_LEVEL))
+		{
+			sensorInfo.totalSamples = stream->readUINT32();
+		}
+		stream->popState();
+
+		stream->pushState();
+		sensorInfo.hasTemperature = false;
+		if (stream->findPrev(GPMF_KEY_TEMPERATURE_C,GPMF_Levels::GPMF_CURRENT_LEVEL))
+		{
+			sensorInfo.hasTemperature = true;
+			sensorInfo.temperature_c = stream->readFloat();
+		}
+		stream->popState();
+
+		stream->pushState();
+		if (stream->findPrev(GPMF_KEY_SI_UNITS,GPMF_Levels::GPMF_CURRENT_LEVEL))
+		{
+			sensorInfo.siUnit = stream->readString();
+		}
+		stream->popState();
+
+		return true;
 	}
 
 	GPMF_Payload::GPMF_Payload(

@@ -40,6 +40,7 @@ namespace gpt
 	const FourCC GPMF_KEY_END =				0;                      //(null)
 
 	const FourCC GPMF_KEY_ACCL =			MAKE_FOURCC_ID('A','C','C','L');//ACCL - Accelerometer samples data
+	const FourCC GPMF_KEY_GYRO =			MAKE_FOURCC_ID('G','Y','R','O');//GYRO - Gyroscope samples data
 	const FourCC GPMF_KEY_GPS5 =			MAKE_FOURCC_ID('G','P','S','5');//GPS5 - GPS samples data
 
 	// forward declarations
@@ -130,6 +131,18 @@ namespace gpt
 		std::string
 		klvToString();
 
+		uint8_t     readUINT8();
+		int8_t      readINT8();
+		uint16_t    readUINT16();
+		int16_t     readINT16();
+		uint32_t    readUINT32();
+		int32_t     readINT32();
+		uint64_t    readUINT64();
+		int64_t     readINT64();
+		float       readFloat();
+		double      readDouble();
+		std::string readString();
+
 	private:
 		// only allow construction by the GPMF_Payload class
 		friend class GPMF_Payload;
@@ -144,6 +157,22 @@ namespace gpt
 		GPMF_Stream(
 			uint32_t *buffer,
 			uint32_t datasize);
+
+		enum Endianness
+		{
+			eEndianAuto,
+			eEndianLittle,
+			eEndianBig
+		};
+
+		template<typename INT_T>
+		INT_T
+		readInt(
+			Endianness endianness = Endianness::eEndianAuto);
+
+		void
+		checkTypeAndThrow(
+			char expectedType);
 
 	private:
 		// can be casted to a (GPMF_stream *)

@@ -8,9 +8,24 @@
 
 namespace gpt
 {
+	struct SensorInfo
+	{
+		// sensor's FourCC key
+		FourCC fourCC;
+		std::string name;
+		size_t totalSamples;
+		double measuredRate_hz;
+		std::string siUnit;
 
+		std::string
+		toString(
+			const std::string &tabStr = "") const;
+	};
+	
 	class MP4_Source
 	{
+	public:
+
 	public:
 		MP4_Source();
 
@@ -56,6 +71,11 @@ namespace gpt
 		GPMF_PayloadPtr
 		getPayload(
 			uint32_t index);
+
+		bool
+		getSensorInfo(
+			FourCC sensor,
+			SensorInfo &sensorInfo);
 
 	private:
 		void
