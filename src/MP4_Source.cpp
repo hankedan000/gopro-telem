@@ -1,10 +1,28 @@
 #include "GoProTelem/MP4_Source.h"
 
+#include <iomanip>
+#include <sstream>
 #include <stdexcept>
 #include "GPMF_mp4reader.h"
 
 namespace gpt
 {
+
+	std::string
+	SensorInfo::toString(
+		const std::string &tabStr) const
+	{
+		std::stringstream ss;
+        ss              << tabStr << "fourCC:           " << fourCC.toString();
+        ss << std::endl << tabStr << "name:             " << name;
+        ss << std::endl << tabStr << "totalSamples:     " << totalSamples;
+        ss << std::endl << tabStr << "measuredRate:     " << std::fixed << std::setprecision(3) << measuredRate_hz << " (Hz)";
+        if ( ! siUnit.empty())
+        {
+            ss << std::endl << tabStr << "siUnit:           " << siUnit;
+        }
+		return ss.str();
+	}
 
 	MP4_Source::MP4_Source()
 	 : filepath_()
@@ -95,6 +113,36 @@ namespace gpt
 		uint32_t index)
 	{
 		return GPMF_PayloadPtr(new GPMF_Payload(mp4Handle_, index));
+	}
+
+	bool
+	MP4_Source::getSensorInfo(
+		FourCC sensor,
+		SensorInfo &sensorInfo)
+	{
+		if (payloadCount() == 0)
+		{
+			return false;
+		}
+
+		auto lastPayload = getPayload(payloadCount() - 1);
+		PayloadSensorInfo payloadSensorInfo;
+		if ( ! lastPayload->getSensorInfo(sensor,payloadSensorInfo))
+		{
+			return false;
+		}
+
+		sensorInfo.fourCC = payloadSensorInfo.fourCC;
+		sensorInfo.name = payloadSensorInfo.name;
+		sensorInfo.siUnit = payloadSensorInfo.siUnit;
+		sensorInfo.totalSamples = payloadSensorInfo.totalSamples;
+		sensorInfo.measuredRate_hz = 0.0;
+		if (sensorInfo.totalSamples > 1)
+		{
+			sensorInfo.measuredRate_hz = (sensorInfo.totalSamples - 1) / duration();
+		}
+
+		return true;
 	}
 
 	void

@@ -225,79 +225,105 @@ namespace gpt
 			GPMF_TYPE_DOUBLE);
 	}
 
-	enum Endianness
+	uint8_t
+	GPMF_Stream::readUINT8()
 	{
-		eEndianAuto,
-		eEndianLittle,
-		eEndianBig
-	};
+		checkTypeAndThrow('B');
+		return readInt<uint8_t>();
+	}
 
-	template<typename INT_T>
-	INT_T
-	rawDataToInt(
-		void *rawdata,
-		Endianness endianness = Endianness::eEndianAuto)
+	int8_t
+	GPMF_Stream::readINT8()
 	{
-		if (endianness == Endianness::eEndianAuto)
-		{
-			uint32_t test = 0x1;
-			endianness = (
-				((uint8_t*)(&test))[0] == 0x1 ?
-				Endianness::eEndianLittle :
-				Endianness::eEndianBig );
-		}
+		checkTypeAndThrow('b');
+		return readInt<int8_t>();
+	}
 
-		INT_T outInt;
-		if (endianness == Endianness::eEndianBig)
-		{
-			// rawdata is already stored in big endian, so just do regular case
-			outInt = *reinterpret_cast<INT_T*>(rawdata);
-		}
-		else
-		{
-			for (size_t i=0; i<sizeof(INT_T); i++)
-			{
-				outInt = (outInt << 8) | reinterpret_cast<uint8_t*>(rawdata)[i];
-			}
-		}
-		return outInt;
+	uint16_t
+	GPMF_Stream::readUINT16()
+	{
+		checkTypeAndThrow('S');
+		return readInt<uint16_t>();
+	}
+
+	int16_t
+	GPMF_Stream::readINT16()
+	{
+		checkTypeAndThrow('s');
+		return readInt<int16_t>();
+	}
+
+	uint32_t
+	GPMF_Stream::readUINT32()
+	{
+		checkTypeAndThrow('L');
+		return readInt<uint32_t>();
+	}
+
+	int32_t
+	GPMF_Stream::readINT32()
+	{
+		checkTypeAndThrow('l');
+		return readInt<int32_t>();
+	}
+
+	uint64_t
+	GPMF_Stream::readUINT64()
+	{
+		checkTypeAndThrow('J');
+		return readInt<uint64_t>();
+	}
+
+	int64_t
+	GPMF_Stream::readINT64()
+	{
+		checkTypeAndThrow('j');
+		return readInt<int64_t>();
 	}
 
 	float
-	rawDataToFloat(
-		void *rawdata)
+	GPMF_Stream::readFloat()
 	{
-		auto intValue = rawDataToInt<uint32_t>(rawdata);
+		checkTypeAndThrow('f');
+		auto intValue = readInt<uint32_t>();
 		return *reinterpret_cast<float*>(&intValue);
 	}
 
 	double
-	rawDataToDouble(
-		void *rawdata)
+	GPMF_Stream::readDouble()
 	{
-		auto intValue = rawDataToInt<uint64_t>(rawdata);
+		checkTypeAndThrow('d');
+		auto intValue = readInt<uint64_t>();
 		return *reinterpret_cast<double*>(&intValue);
+	}
+
+	std::string
+	GPMF_Stream::readString()
+	{
+		checkTypeAndThrow('c');
+		std::string outStr(structSize(),'\0');
+		::strncpy((char*)outStr.data(),(char*)rawData(),outStr.size());
+		return outStr;
 	}
 
 	template <typename INT_T>
 	std::string
-	rawDataIntToString(
-		void *rawdata)
+	intToString(
+		INT_T value)
 	{
 		std::stringstream ss;
-		auto intData = rawDataToInt<INT_T>(rawdata);
-		ss << "0x" << std::hex << intData << " (" << std::dec << intData << ")";
+		ss << "0x" << std::hex << value << " (" << std::dec << value << ")";
 		return ss.str();
 	}
 
 	// specialize for uint8_t so we can print the number correctly; otherwise it would print as a char
 	template <>
 	std::string
-	rawDataIntToString<uint8_t>(
-		void *rawdata)
+	intToString<uint8_t>(
+		uint8_t value)
 	{
 		std::stringstream ss;
-		unsigned int intData = rawDataToInt<uint8_t>(rawdata);
+		unsigned int intData = value;
 		ss << "0x" << std::hex << (intData & 0xFF) << " (" << std::dec << intData << ")";
 		return ss.str();
 	}
@@ -305,11 +331,11 @@ namespace gpt
 	// specialize for int8_t so we can print the number correctly; otherwise it would print as a char
 	template <>
 	std::string
-	rawDataIntToString<int8_t>(
-		void *rawdata)
+	intToString<int8_t>(
+		int8_t value)
 	{
 		std::stringstream ss;
-		int intData = rawDataToInt<int8_t>(rawdata);
+		int intData = value;
 		ss << "0x" << std::hex << (intData & 0xFF) << " (" << std::dec << intData << ")";
 		return ss.str();
 	}
@@ -329,54 +355,45 @@ namespace gpt
 		switch (type)
 		{
 			case 'b':// single byte signed integer
-				ss << rawDataIntToString<int8_t>(this->rawData());
+				ss << intToString(readINT8());
 				break;
 			case 'B':// single byte unsigned integer
-				ss << rawDataIntToString<uint8_t>(this->rawData());
+				ss << intToString(readUINT8());
 				break;
 			case 'c':// ASCII string
 			{
-				char tmpStr[256];
-				size_t numChars = this->structSize();
-				if (numChars >= (sizeof(tmpStr) - 1))
-				{
-					printf("string is larger than buffer! can't read in string.\n");
-					break;
-				}
-				::memcpy((void*)tmpStr,this->rawData(),numChars);
-				tmpStr[numChars] = '\0';// GPMF doesn't gaurantee strings are null-terminated
-				ss << tmpStr;
+				ss << readString();
 				break;
 			}
 			case 'd':// 64-bit double precision (IEEE 754)
-				ss << rawDataToDouble(this->rawData());
+				ss << intToString(readDouble());
 				break;
 			case 'f':// 32-bit float (IEEE 754)
-				ss << rawDataToFloat(this->rawData());
+				ss << intToString(readFloat());
 				break;
 			case 'F':// 32-bit four character key -- FourCC
 			{
-				gpt::FourCC fourCC(rawDataToInt<uint32_t>(this->rawData(),Endianness::eEndianLittle));
+				gpt::FourCC fourCC(readInt<uint32_t>(Endianness::eEndianLittle));
 				ss << fourCC.toString();
 				break;
 			}
 			case 'j':// 64-bit signed integer
-				ss << rawDataIntToString<int64_t>(this->rawData());
+				ss << intToString(readINT64());
 				break;
 			case 'J':// 64-bit unsigned integer
-				ss << rawDataIntToString<uint64_t>(this->rawData());
+				ss << intToString(readUINT64());
 				break;
 			case 'l':// 32-bit signed integer
-				ss << rawDataIntToString<int32_t>(this->rawData());
+				ss << intToString(readINT32());
 				break;
 			case 'L':// 32-bit unsigned integer
-				ss << rawDataIntToString<uint32_t>(this->rawData());
+				ss << intToString(readUINT32());
 				break;
 			case 's':// 16-bit signed integer
-				ss << rawDataIntToString<int16_t>(this->rawData());
+				ss << intToString(readINT16());
 				break;
 			case 'S':// 16-bit unsigned integer
-				ss << rawDataIntToString<uint16_t>(this->rawData());
+				ss << intToString(readUINT16());
 				break;
 			case 'U':// Date + UTC Time format yymmddhhmmss.sss - (years 20xx covered)
 			{
@@ -401,6 +418,49 @@ namespace gpt
 		if (ret != GPMF_OK)
 		{
 			std::runtime_error("failed to init GPMF_stream from payload buffer");
+		}
+	}
+
+	template<typename INT_T>
+	INT_T
+	GPMF_Stream::readInt(
+		Endianness endianness)
+	{
+		if (endianness == Endianness::eEndianAuto)
+		{
+			uint32_t test = 0x1;
+			endianness = (
+				((uint8_t*)(&test))[0] == 0x1 ?
+				Endianness::eEndianLittle :
+				Endianness::eEndianBig );
+		}
+
+		INT_T outInt;
+		if (endianness == Endianness::eEndianBig)
+		{
+			// rawdata is already stored in big endian, so just do regular case
+			outInt = *reinterpret_cast<INT_T*>(rawData());
+		}
+		else
+		{
+			for (size_t i=0; i<sizeof(INT_T); i++)
+			{
+				outInt = (outInt << 8) | reinterpret_cast<uint8_t*>(rawData())[i];
+			}
+		}
+		return outInt;
+	}
+
+	void
+	GPMF_Stream::checkTypeAndThrow(
+		char expectedType)
+	{
+		if (type() != expectedType)
+		{
+			std::stringstream ss;
+			ss << "type mismatch! expected '" << expectedType << "', but current KLV"
+				" has type '" << type() << "'.";
+			throw std::runtime_error(ss.str());
 		}
 	}
 

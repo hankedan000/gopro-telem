@@ -14,6 +14,24 @@ namespace gpt
 
 	using GPMF_PayloadPtr = std::shared_ptr<GPMF_Payload>;
 
+	struct PayloadSensorInfo
+	{
+		// sensor's FourCC key
+		FourCC fourCC;
+		std::string name;
+		size_t samplesInPayload;
+		// total samples since first first payload in MP4
+		size_t totalSamples;
+		double measuredRate_hz;
+		bool hasTemperature;
+		double temperature_c;
+		std::string siUnit;
+
+		std::string
+		toString(
+			const std::string &tabStr = "") const;
+	};
+
 	class GPMF_Payload
 	{
 	public:
@@ -33,6 +51,15 @@ namespace gpt
 
 		GPMF_StreamPtr
 		getStream();
+
+		/**
+		 * @return
+		 * false if the sensor was not found in the payload, true otherwise.
+		 */
+		bool
+		getSensorInfo(
+			FourCC sensor,
+			PayloadSensorInfo &sensorInfo);
 
 	private:
 		// only allow construction by the MP4_Source class
