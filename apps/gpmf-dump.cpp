@@ -290,31 +290,11 @@ printPayloadStructure(
     }
 }
 
-int main(int argc, char *argv[])
+void
+printPayloadDump(
+    gpt::MP4_Source &mp4,
+    const ProgOptions &opts)
 {
-	signal(SIGINT, handleSIGINT);// ctrl+c to stop application
-
-	ProgOptions opts;
-	parseArgs(argc,argv,opts);
-
-	if (opts.inputFile.empty())
-	{
-		printf("no input video file provided.\n");
-		displayUsage();
-		exit(0);
-	}
-
-	printf("opening %s\n", opts.inputFile.c_str());
-    gpt::MP4_Source mp4;
-    if (mp4.open(opts.inputFile) != 0)
-    {
-        printf("failed to open MP4 source file. %s\n", opts.inputFile.c_str());
-        exit(-1);
-    }
-
-    printf("--------------------------- MP4 INFO ----------------------------\n");
-    printMP4_Info(mp4);
-
     size_t startIdx = 0;
     if (opts.payloadStartIdxSet)
     {
@@ -354,6 +334,37 @@ int main(int argc, char *argv[])
             printPayloadStructure(payload);
         }
         printf("======================= END PAYLOAD %04ld =======================\n", payloadIdx);
+    }
+}
+
+int main(int argc, char *argv[])
+{
+	signal(SIGINT, handleSIGINT);// ctrl+c to stop application
+
+	ProgOptions opts;
+	parseArgs(argc,argv,opts);
+
+	if (opts.inputFile.empty())
+	{
+		printf("no input video file provided.\n");
+		displayUsage();
+		exit(0);
+	}
+
+	printf("opening %s\n", opts.inputFile.c_str());
+    gpt::MP4_Source mp4;
+    if (mp4.open(opts.inputFile) != 0)
+    {
+        printf("failed to open MP4 source file. %s\n", opts.inputFile.c_str());
+        exit(-1);
+    }
+
+    printf("--------------------------- MP4 INFO ----------------------------\n");
+    printMP4_Info(mp4);
+
+    if (opts.showInfo || opts.showStructure)
+    {
+        printPayloadDump(mp4, opts);
     }
 
 	return 0;
