@@ -35,7 +35,9 @@ namespace gpt
 
 	std::vector<AcclTimedSample>
 	getPayloadAcclSamples(
-		GPMF_PayloadPtr pl);
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz = -1);
 
 	std::vector<AcclTimedSample>
 	getAcclSamples(
