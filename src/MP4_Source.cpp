@@ -9,7 +9,7 @@ namespace gpt
 {
 
 	std::string
-	SensorInfo::toString(
+	MP4_SensorInfo::toString(
 		const std::string &tabStr) const
 	{
 		std::stringstream ss;
@@ -118,7 +118,7 @@ namespace gpt
 	bool
 	MP4_Source::getSensorInfo(
 		FourCC sensor,
-		SensorInfo &sensorInfo)
+		MP4_SensorInfo &sensorInfo)
 	{
 		if (payloadCount() == 0)
 		{

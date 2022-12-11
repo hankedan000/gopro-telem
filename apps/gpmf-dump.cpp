@@ -132,7 +132,7 @@ printMP4_Info(
     printf("payloadCount: %ld\n", mp4.payloadCount());
     printf("fps:          %0.3f\n", mp4.fps());
 
-    gpt::SensorInfo sensorInfo;
+    gpt::MP4_SensorInfo sensorInfo;
     printf("ACCL:\n");
     if (mp4.getSensorInfo(gpt::GPMF_KEY_ACCL, sensorInfo))
     {

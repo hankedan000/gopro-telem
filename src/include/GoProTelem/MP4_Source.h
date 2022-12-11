@@ -8,7 +8,7 @@
 
 namespace gpt
 {
-	struct SensorInfo
+	struct MP4_SensorInfo
 	{
 		// sensor's FourCC key
 		FourCC fourCC;
@@ -75,7 +75,7 @@ namespace gpt
 		bool
 		getSensorInfo(
 			FourCC sensor,
-			SensorInfo &sensorInfo);
+			MP4_SensorInfo &sensorInfo);
 
 	private:
 		void
