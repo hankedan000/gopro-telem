@@ -212,13 +212,12 @@ namespace gpt
 		MP4_Source &mp4)
 	{
 		const size_t frameCount = mp4.frameCount();
-		const double duration = mp4.duration();
 		if (frameCount <= 1)
 		{
 			throw std::runtime_error(
 				"not enough frames to combine samples with. frameCount = " + std::to_string(frameCount));
 		}
-		const double frameDt = duration / (frameCount - 1);
+		const double frameDt = 1.0 / mp4.fps();
 
 		std::vector<CombinedSample> sampsOut;
 		sampsOut.resize(frameCount);
