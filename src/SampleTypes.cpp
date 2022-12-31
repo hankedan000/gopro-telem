@@ -52,6 +52,13 @@ namespace gpt
 	}
 
 	std::string
+	GyroSample::toString(
+			bool withBraces) const
+	{
+		return FloatXYZ::toString(withBraces);
+	}
+
+	std::string
 	GPS_Sample::toString(
 			bool withBraces) const
 	{
@@ -86,6 +93,18 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			TimedSample::toString() << ", " <<
 			AcclSample::toString() <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
+	GyroTimedSample::toString(
+			bool withBraces) const
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			TimedSample::toString() << ", " <<
+			GyroSample::toString() <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
