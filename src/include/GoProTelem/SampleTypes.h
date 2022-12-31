@@ -37,6 +37,8 @@ namespace gpt
 
 	class AcclSample : public FloatXYZ
 	{
+		// m/s^2
+
 	public:
 		std::string
 		toString(
@@ -45,6 +47,12 @@ namespace gpt
 
 	class GyroSample : public FloatXYZ
 	{
+		// rad/s
+
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class GPS_Sample
@@ -70,6 +78,10 @@ namespace gpt
 
 	class GyroTimedSample : public GyroSample, public TimedSample
 	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
 	};
 
 	class GPS_TimedSample : public GPS_Sample, public TimedSample
