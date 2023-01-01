@@ -55,6 +55,16 @@ namespace gpt
 			bool withBraces = false) const;
 	};
 
+	class GravSample : public FloatXYZ
+	{
+		// rad/s
+
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
 	class GPS_Sample
 	{
 	public:
@@ -84,6 +94,14 @@ namespace gpt
 			bool withBraces = false) const;
 	};
 
+	class GravTimedSample : public GravSample, public TimedSample
+	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
 	class GPS_TimedSample : public GPS_Sample, public TimedSample
 	{
 	public:
@@ -102,6 +120,7 @@ namespace gpt
 	public:
 		AcclSample accl;
 		GyroSample gyro;
+		GravSample grav;
 		GPS_Sample gps;
 
 		std::string

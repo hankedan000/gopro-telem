@@ -118,13 +118,16 @@ GoProTelemTest::acclOrientation()
 		gpt::MP4_Source mp4;
 		CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_ACCL_GRAV_PX));
 
-		auto samps = gpt::getAcclSamples(mp4);
+		auto samps = gpt::getCombinedSamples(mp4);
 		CPPUNIT_ASSERT(samps.size() > 0);
 
 		auto samp = samps.at(0);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.x,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.y,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.accl.x,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.y,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,samp.grav.x,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.y,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.z,0.2);
 	}
 
 	// +y accl test
@@ -132,13 +135,16 @@ GoProTelemTest::acclOrientation()
 		gpt::MP4_Source mp4;
 		CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_ACCL_GRAV_PY));
 
-		auto samps = gpt::getAcclSamples(mp4);
+		auto samps = gpt::getCombinedSamples(mp4);
 		CPPUNIT_ASSERT(samps.size() > 0);
 
 		auto samp = samps.at(0);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.x,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.y,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.x,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.accl.y,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.x,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,samp.grav.y,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.z,0.2);
 	}
 
 	// +z accl test
@@ -146,13 +152,16 @@ GoProTelemTest::acclOrientation()
 		gpt::MP4_Source mp4;
 		CPPUNIT_ASSERT_EQUAL(0,mp4.open(GOPRO9_ACCL_GRAV_PZ));
 
-		auto samps = gpt::getAcclSamples(mp4);
+		auto samps = gpt::getCombinedSamples(mp4);
 		CPPUNIT_ASSERT(samps.size() > 0);
 
 		auto samp = samps.at(0);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.x,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.y,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.x,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.y,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(9.8,samp.accl.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.x,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.grav.y,0.2);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0,samp.grav.z,0.2);
 	}
 
 	// -z accl test

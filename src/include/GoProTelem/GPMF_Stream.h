@@ -41,6 +41,7 @@ namespace gpt
 
 	const FourCC GPMF_KEY_ACCL =			MAKE_FOURCC_ID('A','C','C','L');//ACCL - Accelerometer samples data
 	const FourCC GPMF_KEY_GYRO =			MAKE_FOURCC_ID('G','Y','R','O');//GYRO - Gyroscope samples data
+	const FourCC GPMF_KEY_GRAV =			MAKE_FOURCC_ID('G','R','A','V');//GRAV - Gravity vector
 	const FourCC GPMF_KEY_GPS5 =			MAKE_FOURCC_ID('G','P','S','5');//GPS5 - GPS samples data
 
 	// forward declarations
