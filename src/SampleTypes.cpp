@@ -39,10 +39,10 @@ namespace gpt
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) << std::showpos <<
+			"w: " << w << ", "
 			"x: " << x << ", "
 			"y: " << y << ", "
-			"z: " << z << ", "
-			"w: " << w <<
+			"z: " << z <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
