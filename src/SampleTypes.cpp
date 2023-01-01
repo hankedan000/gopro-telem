@@ -59,6 +59,13 @@ namespace gpt
 	}
 
 	std::string
+	GravSample::toString(
+			bool withBraces) const
+	{
+		return FloatXYZ::toString(withBraces);
+	}
+
+	std::string
 	GPS_Sample::toString(
 			bool withBraces) const
 	{
@@ -110,6 +117,18 @@ namespace gpt
 	}
 
 	std::string
+	GravTimedSample::toString(
+			bool withBraces) const
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			TimedSample::toString() << ", " <<
+			GravSample::toString() <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
 	CombinedSample::toString(
 		bool withBraces) const
 	{
@@ -117,6 +136,8 @@ namespace gpt
 		ss << (withBraces ? "{ \n" : "") <<
 			(withBraces ? "  " : "") << TimedSample::toString() << ", " << std::endl <<
 			(withBraces ? "  " : "") << "accl: " << accl.toString(true) << std::endl <<
+			(withBraces ? "  " : "") << "gyro: " << gyro.toString(true) << std::endl <<
+			(withBraces ? "  " : "") << "grav: " << grav.toString(true) << std::endl <<
 			(withBraces ? "  " : "") << "gps: " << gps.toString(true) <<
 			(withBraces ? "\n}" : "");
 		return ss.str();

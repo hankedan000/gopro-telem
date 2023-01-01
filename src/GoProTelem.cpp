@@ -166,8 +166,8 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.y = tmpbuffer[ss*elements+2] * -1;
 				sampOut.x = tmpbuffer[ss*elements+1] * -1;
+				sampOut.y = tmpbuffer[ss*elements+2] * -1;
 				sampOut.z = tmpbuffer[ss*elements+0] * -1;
 			}
 		}
@@ -265,8 +265,8 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.y = tmpbuffer[ss*elements+2];
 				sampOut.x = tmpbuffer[ss*elements+1];
+				sampOut.y = tmpbuffer[ss*elements+2];
 				sampOut.z = tmpbuffer[ss*elements+0];
 			}
 		}
@@ -307,6 +307,105 @@ namespace gpt
 		return sampsOut;
 	}
 
+	std::vector<GravTimedSample>
+	getPayloadGravSamples(
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz)
+	{
+		std::vector<GravTimedSample> sampsOut;
+
+		auto stream = pl->getStream();
+		if ( ! stream->findNext(gpt::GPMF_KEY_GRAV, gpt::GPMF_RECURSE_LEVELS))
+		{
+			// payload doesn't contain any GRAV samples
+			return sampsOut;
+		}
+
+		char* rawdata = (char*)stream->rawData();
+		FourCC key = stream->key();
+		char type = stream->type();
+		uint32_t samples = stream->repeat();
+		uint32_t elements = stream->elementsInStruct();
+		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
+
+		if (samples == 0)
+		{
+			return sampsOut;
+		}
+		if (elements != 3)
+		{
+			throw std::runtime_error(
+				"invalid number of elements in GRAV sample. expected 3. actual " + std::to_string(elements));
+		}
+
+		double samp_dt = 0.0;
+		if (sampleRate_hz > 0.0)
+		{
+			samp_dt = 1.0 / sampleRate_hz;
+		}
+		else if (sampleRate_hz < 0.0)
+		{
+			// negative rate means compute based on payload duration & sample count
+			samp_dt = (pl->outTime() - pl->inTime()) / samples;
+		}
+
+		size_t buffersize = samples * elements * sizeof(double);
+		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
+		{
+			printf("Failed to read gravity samples!\n");
+		}
+		else
+		{
+			sampsOut.resize(sampsOut.size() + samples);
+			for (unsigned int ss=0; ss<samples; ss++)
+			{
+				auto &sampOut = sampsOut.at(ss);
+				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
+				// Hero 9 data order determined imperically
+				sampOut.x = tmpbuffer[ss*elements+0] * -1;
+				sampOut.y = tmpbuffer[ss*elements+2] * -1;
+				sampOut.z = tmpbuffer[ss*elements+1] * -1;
+			}
+		}
+
+		free(tmpbuffer);
+
+		return sampsOut;
+	}
+
+	std::vector<GravTimedSample>
+	getGravSamples(
+		MP4_Source &mp4)
+	{
+		std::vector<GravTimedSample> sampsOut;
+
+		MP4_SensorInfo sensorInfo;
+		if ( ! mp4.getSensorInfo(GPMF_KEY_GRAV, sensorInfo))
+		{
+			return sampsOut;
+		}
+
+		double sampleRate_hz = sensorInfo.measuredRate_hz;
+		double samp_dt = 1.0 / sampleRate_hz;
+		double timeOffset_sec = 0.0;
+		size_t payloadCount = mp4.payloadCount();
+		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
+		{
+			// printf("pIdx = %ld\n", pIdx);
+			auto payloadPtr = mp4.getPayload(pIdx);
+			auto pSamps = getPayloadGravSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
+			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
+			if (pSamps.size() > 0)
+			{
+				timeOffset_sec = pSamps.back().t_offset + samp_dt;
+			}
+		}
+
+		return sampsOut;
+	}
+
 	std::vector<CombinedSample>
 	getCombinedSamples(
 		MP4_Source &mp4)
@@ -324,9 +423,13 @@ namespace gpt
 
 		const auto gpsSamps = getGPS_Samples(mp4);
 		const auto acclSamps = getAcclSamples(mp4);
+		const auto gyroSamps = getGyroSamples(mp4);
+		const auto gravSamps = getGravSamples(mp4);
 
 		size_t gpsIdx = 0;
 		size_t acclIdx = 0;
+		size_t gyroIdx = 0;
+		size_t gravIdx = 0;
 		for (size_t ff=0; ff<frameCount; ff++)
 		{
 			auto &sampOut = sampsOut.at(ff);
@@ -373,6 +476,50 @@ namespace gpt
 				else
 				{
 					sampOut.accl = acclSamps.at(acclSamps.size() - 1);
+				}
+			}
+
+			// gyro sample interpolation
+			{
+				// find next two samples to interpolate between
+				bool gyroFound = findLerpIndex(gyroIdx,gyroSamps,sampOut.t_offset);
+
+				// perform interpolation
+				if (gyroFound)
+				{
+					auto &sampA = gyroSamps.at(gyroIdx);
+					auto &sampB = gyroSamps.at(gyroIdx+1);
+					lerpTimedSample(sampOut.gyro, sampA, sampB, sampOut.t_offset);
+				}
+				else if (gyroIdx == 0)
+				{
+					sampOut.gyro = gyroSamps.at(gyroIdx);
+				}
+				else
+				{
+					sampOut.gyro = gyroSamps.at(gyroSamps.size() - 1);
+				}
+			}
+
+			// grav sample interpolation
+			{
+				// find next two samples to interpolate between
+				bool gravFound = findLerpIndex(gravIdx,gravSamps,sampOut.t_offset);
+
+				// perform interpolation
+				if (gravFound)
+				{
+					auto &sampA = gravSamps.at(gravIdx);
+					auto &sampB = gravSamps.at(gravIdx+1);
+					lerpTimedSample(sampOut.grav, sampA, sampB, sampOut.t_offset);
+				}
+				else if (gravIdx == 0)
+				{
+					sampOut.grav = gravSamps.at(gravIdx);
+				}
+				else
+				{
+					sampOut.grav = gravSamps.at(gravSamps.size() - 1);
 				}
 			}
 		}
