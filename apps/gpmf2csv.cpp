@@ -109,6 +109,7 @@ dumpToCSV(
     fprintf(csvFile,",accl_x (m/s^2),accl_y (m/s^2),accl_z (m/s^2)");
     fprintf(csvFile,",gyro_x (rad/s),gyro_y (rad/s),gyro_z (rad/s)");
     fprintf(csvFile,",grav_x (G),grav_y (G),grav_z (G)");
+    fprintf(csvFile,",cori_x,cori_y,cori_z,cori_w");
     fprintf(csvFile,",gps_lat (deg),gps_lon (deg),gps_altitude (m),gps_speed2D (m/s),gps_speed3D (m/s)");
     fprintf(csvFile,"\n");
     for (const auto &sample : samples)
@@ -120,6 +121,8 @@ dumpToCSV(
         fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f",gyro.x,gyro.y,gyro.z);
         auto grav = sample.grav;
         fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f",grav.x,grav.y,grav.z);
+        auto cori = sample.cori;
+        fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f,%+0.06f",cori.x,cori.y,cori.z,cori.w);
         auto gps = sample.gps;
         fprintf(csvFile,",%+0.06f,%+0.06f,%0.03f,%0.03f,%0.03f",gps.coord.lat,gps.coord.lon,gps.altitude,gps.speed2D,gps.speed3D);
         fprintf(csvFile,"\n");

@@ -406,6 +406,106 @@ namespace gpt
 		return sampsOut;
 	}
 
+	std::vector<OrientationTimedSample>
+	getPayloadCoriSamples(
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz)
+	{
+		std::vector<OrientationTimedSample> sampsOut;
+
+		auto stream = pl->getStream();
+		if ( ! stream->findNext(gpt::GPMF_KEY_CORI, gpt::GPMF_RECURSE_LEVELS))
+		{
+			// payload doesn't contain any GRAV samples
+			return sampsOut;
+		}
+
+		char* rawdata = (char*)stream->rawData();
+		FourCC key = stream->key();
+		char type = stream->type();
+		uint32_t samples = stream->repeat();
+		uint32_t elements = stream->elementsInStruct();
+		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
+
+		if (samples == 0)
+		{
+			return sampsOut;
+		}
+		if (elements != 4)
+		{
+			throw std::runtime_error(
+				"invalid number of elements in CORI sample. expected 4. actual " + std::to_string(elements));
+		}
+
+		double samp_dt = 0.0;
+		if (sampleRate_hz > 0.0)
+		{
+			samp_dt = 1.0 / sampleRate_hz;
+		}
+		else if (sampleRate_hz < 0.0)
+		{
+			// negative rate means compute based on payload duration & sample count
+			samp_dt = (pl->outTime() - pl->inTime()) / samples;
+		}
+
+		size_t buffersize = samples * elements * sizeof(double);
+		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
+		{
+			printf("Failed to read camera orientation samples!\n");
+		}
+		else
+		{
+			sampsOut.resize(sampsOut.size() + samples);
+			for (unsigned int ss=0; ss<samples; ss++)
+			{
+				auto &sampOut = sampsOut.at(ss);
+				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
+				// data order is just a guess for now...
+				sampOut.x = tmpbuffer[ss*elements+0];
+				sampOut.y = tmpbuffer[ss*elements+1];
+				sampOut.z = tmpbuffer[ss*elements+2];
+				sampOut.w = tmpbuffer[ss*elements+3];
+			}
+		}
+
+		free(tmpbuffer);
+
+		return sampsOut;
+	}
+
+	std::vector<OrientationTimedSample>
+	getCoriSamples(
+		MP4_Source &mp4)
+	{
+		std::vector<OrientationTimedSample> sampsOut;
+
+		MP4_SensorInfo sensorInfo;
+		if ( ! mp4.getSensorInfo(GPMF_KEY_CORI, sensorInfo))
+		{
+			return sampsOut;
+		}
+
+		double sampleRate_hz = sensorInfo.measuredRate_hz;
+		double samp_dt = 1.0 / sampleRate_hz;
+		double timeOffset_sec = 0.0;
+		size_t payloadCount = mp4.payloadCount();
+		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
+		{
+			// printf("pIdx = %ld\n", pIdx);
+			auto payloadPtr = mp4.getPayload(pIdx);
+			auto pSamps = getPayloadCoriSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
+			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
+			if (pSamps.size() > 0)
+			{
+				timeOffset_sec = pSamps.back().t_offset + samp_dt;
+			}
+		}
+
+		return sampsOut;
+	}
+
 	std::vector<CombinedSample>
 	getCombinedSamples(
 		MP4_Source &mp4)
@@ -425,11 +525,13 @@ namespace gpt
 		const auto acclSamps = getAcclSamples(mp4);
 		const auto gyroSamps = getGyroSamples(mp4);
 		const auto gravSamps = getGravSamples(mp4);
+		const auto coriSamps = getCoriSamples(mp4);
 
 		size_t gpsIdx = 0;
 		size_t acclIdx = 0;
 		size_t gyroIdx = 0;
 		size_t gravIdx = 0;
+		size_t coriIdx = 0;
 		for (size_t ff=0; ff<frameCount; ff++)
 		{
 			auto &sampOut = sampsOut.at(ff);
@@ -520,6 +622,28 @@ namespace gpt
 				else
 				{
 					sampOut.grav = gravSamps.at(gravSamps.size() - 1);
+				}
+			}
+
+			// camera orientation sample interpolation
+			{
+				// find next two samples to interpolate between
+				bool coriFound = findLerpIndex(coriIdx,coriSamps,sampOut.t_offset);
+
+				// perform interpolation
+				if (coriFound)
+				{
+					auto &sampA = coriSamps.at(coriIdx);
+					auto &sampB = coriSamps.at(coriIdx+1);
+					lerpTimedSample(sampOut.cori, sampA, sampB, sampOut.t_offset);
+				}
+				else if (coriIdx == 0)
+				{
+					sampOut.cori = coriSamps.at(coriIdx);
+				}
+				else
+				{
+					sampOut.cori = coriSamps.at(coriSamps.size() - 1);
 				}
 			}
 		}

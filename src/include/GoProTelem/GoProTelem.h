@@ -63,6 +63,16 @@ namespace gpt
 	getGravSamples(
 		MP4_Source &mp4);
 
+	std::vector<OrientationTimedSample>
+	getPayloadCoriSamples(
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz = -1);
+
+	std::vector<OrientationTimedSample>
+	getCoriSamples(
+		MP4_Source &mp4);
+
 	std::vector<CombinedSample>
 	getCombinedSamples(
 		MP4_Source &mp4);
