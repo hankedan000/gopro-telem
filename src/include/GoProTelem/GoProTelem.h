@@ -39,6 +39,16 @@ namespace gpt
 		double timeOffset_sec,
 		double sampleRate_hz = -1);
 
+	std::vector<GyroTimedSample>
+	getGyroSamples(
+		MP4_Source &mp4);
+
+	std::vector<GyroTimedSample>
+	getPayloadGyroSamples(
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz = -1);
+
 	std::vector<AcclTimedSample>
 	getAcclSamples(
 		MP4_Source &mp4);

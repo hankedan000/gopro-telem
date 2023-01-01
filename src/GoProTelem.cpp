@@ -156,7 +156,7 @@ namespace gpt
 		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
-			printf("FAILED TO READ ACCL samples!\n");
+			printf("Failed to read accl samples!\n");
 		}
 		else
 		{
@@ -165,9 +165,10 @@ namespace gpt
 			{
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
-				sampOut.y = tmpbuffer[ss*elements+0];
-				sampOut.x = tmpbuffer[ss*elements+1];// GoPro docs says this is -y
-				sampOut.z = tmpbuffer[ss*elements+2];
+				// Hero 9 data order determined imperically
+				sampOut.y = tmpbuffer[ss*elements+2] * -1;
+				sampOut.x = tmpbuffer[ss*elements+1] * -1;
+				sampOut.z = tmpbuffer[ss*elements+0] * -1;
 			}
 		}
 
@@ -197,6 +198,105 @@ namespace gpt
 			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadAcclSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
+			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
+			if (pSamps.size() > 0)
+			{
+				timeOffset_sec = pSamps.back().t_offset + samp_dt;
+			}
+		}
+
+		return sampsOut;
+	}
+
+	std::vector<GyroTimedSample>
+	getPayloadGyroSamples(
+		GPMF_PayloadPtr pl,
+		double timeOffset_sec,
+		double sampleRate_hz)
+	{
+		std::vector<GyroTimedSample> sampsOut;
+
+		auto stream = pl->getStream();
+		if ( ! stream->findNext(gpt::GPMF_KEY_GYRO, gpt::GPMF_RECURSE_LEVELS))
+		{
+			// payload doesn't contain any GYRO samples
+			return sampsOut;
+		}
+
+		char* rawdata = (char*)stream->rawData();
+		FourCC key = stream->key();
+		char type = stream->type();
+		uint32_t samples = stream->repeat();
+		uint32_t elements = stream->elementsInStruct();
+		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
+
+		if (samples == 0)
+		{
+			return sampsOut;
+		}
+		if (elements != 3)
+		{
+			throw std::runtime_error(
+				"invalid number of elements in GYRO sample. expected 3. actual " + std::to_string(elements));
+		}
+
+		double samp_dt = 0.0;
+		if (sampleRate_hz > 0.0)
+		{
+			samp_dt = 1.0 / sampleRate_hz;
+		}
+		else if (sampleRate_hz < 0.0)
+		{
+			// negative rate means compute based on payload duration & sample count
+			samp_dt = (pl->outTime() - pl->inTime()) / samples;
+		}
+
+		size_t buffersize = samples * elements * sizeof(double);
+		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
+		{
+			printf("Failed to read gyro samples!\n");
+		}
+		else
+		{
+			sampsOut.resize(sampsOut.size() + samples);
+			for (unsigned int ss=0; ss<samples; ss++)
+			{
+				auto &sampOut = sampsOut.at(ss);
+				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
+				// Hero 9 data order determined imperically
+				sampOut.y = tmpbuffer[ss*elements+2];
+				sampOut.x = tmpbuffer[ss*elements+1];
+				sampOut.z = tmpbuffer[ss*elements+0];
+			}
+		}
+
+		free(tmpbuffer);
+
+		return sampsOut;
+	}
+
+	std::vector<GyroTimedSample>
+	getGyroSamples(
+		MP4_Source &mp4)
+	{
+		std::vector<GyroTimedSample> sampsOut;
+
+		MP4_SensorInfo sensorInfo;
+		if ( ! mp4.getSensorInfo(GPMF_KEY_GYRO, sensorInfo))
+		{
+			return sampsOut;
+		}
+
+		double sampleRate_hz = sensorInfo.measuredRate_hz;
+		double samp_dt = 1.0 / sampleRate_hz;
+		double timeOffset_sec = 0.0;
+		size_t payloadCount = mp4.payloadCount();
+		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
+		{
+			// printf("pIdx = %ld\n", pIdx);
+			auto payloadPtr = mp4.getPayload(pIdx);
+			auto pSamps = getPayloadGyroSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
 			if (pSamps.size() > 0)
 			{
