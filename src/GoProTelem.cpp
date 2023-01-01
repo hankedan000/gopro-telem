@@ -462,11 +462,11 @@ namespace gpt
 			{
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
-				// data order is just a guess for now...
-				sampOut.x = tmpbuffer[ss*elements+0];
-				sampOut.y = tmpbuffer[ss*elements+1];
+				// Hero 9 data order determined imperically
+				sampOut.w = tmpbuffer[ss*elements+0];
+				sampOut.x = tmpbuffer[ss*elements+1];
+				sampOut.y = tmpbuffer[ss*elements+3];
 				sampOut.z = tmpbuffer[ss*elements+2];
-				sampOut.w = tmpbuffer[ss*elements+3];
 			}
 		}
 
