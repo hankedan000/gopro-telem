@@ -25,6 +25,16 @@ namespace gpt
 			bool withBraces = false) const;
 	};
 
+	class Quat
+	{
+	public:
+		float x,y,z,w;
+
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
 	class CoordLL
 	{
 	public:
@@ -57,7 +67,16 @@ namespace gpt
 
 	class GravSample : public FloatXYZ
 	{
-		// rad/s
+		// G-force
+
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
+	class OrientationSample : public Quat
+	{
 
 	public:
 		std::string
@@ -102,6 +121,14 @@ namespace gpt
 			bool withBraces = false) const;
 	};
 
+	class OrientationTimedSample : public OrientationSample, public TimedSample
+	{
+	public:
+		std::string
+		toString(
+			bool withBraces = false) const;
+	};
+
 	class GPS_TimedSample : public GPS_Sample, public TimedSample
 	{
 	public:
@@ -121,6 +148,7 @@ namespace gpt
 		AcclSample accl;
 		GyroSample gyro;
 		GravSample grav;
+		OrientationSample cori;// camera orientation
 		GPS_Sample gps;
 
 		std::string

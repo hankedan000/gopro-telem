@@ -22,16 +22,16 @@ namespace gpt
 
 	void
 	lerp(
-		CoordLL &out,
-		const CoordLL &a,
-		const CoordLL &b,
+		Quat &out,
+		const Quat &a,
+		const Quat &b,
 		double ratio);
 
 	void
 	lerp(
-		AcclSample &out,
-		const AcclSample &a,
-		const AcclSample &b,
+		CoordLL &out,
+		const CoordLL &a,
+		const CoordLL &b,
 		double ratio);
 
 	void

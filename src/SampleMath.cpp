@@ -27,6 +27,19 @@ namespace gpt
 
 	void
 	lerp(
+		Quat &out,
+		const Quat &a,
+		const Quat &b,
+		double ratio)
+	{
+		out.x = lerp(a.x, b.x, ratio);
+		out.y = lerp(a.y, b.y, ratio);
+		out.z = lerp(a.z, b.z, ratio);
+		out.w = lerp(a.w, b.w, ratio);
+	}
+
+	void
+	lerp(
 		CoordLL &out,
 		const CoordLL &a,
 		const CoordLL &b,
@@ -34,16 +47,6 @@ namespace gpt
 	{
 		out.lat = lerp(a.lat, b.lat, ratio);
 		out.lon = lerp(a.lon, b.lon, ratio);
-	}
-
-	void
-	lerp(
-		AcclSample &out,
-		const AcclSample &a,
-		const AcclSample &b,
-		double ratio)
-	{
-		lerp((FloatXYZ&)out, a, b, ratio);
 	}
 
 	void
