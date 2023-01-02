@@ -39,6 +39,7 @@ namespace gpt
 	const FourCC GPMF_KEY_REMARK =			MAKE_FOURCC_ID('R','M','R','K');//RMRK - adding comments to the bitstream (debugging)
 	const FourCC GPMF_KEY_END =				0;                      //(null)
 
+	const FourCC GPMF_KEY_STMP =			MAKE_FOURCC_ID('S','T','M','P');//STMP - Time stamp
 	const FourCC GPMF_KEY_ACCL =			MAKE_FOURCC_ID('A','C','C','L');//ACCL - Accelerometer samples data
 	const FourCC GPMF_KEY_GYRO =			MAKE_FOURCC_ID('G','Y','R','O');//GYRO - Gyroscope samples data
 	const FourCC GPMF_KEY_GRAV =			MAKE_FOURCC_ID('G','R','A','V');//GRAV - Gravity vector
