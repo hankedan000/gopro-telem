@@ -8,6 +8,8 @@ namespace gpt
 	class TimedSample
 	{
 	public:
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
 		double t_offset;
 
 		std::string
