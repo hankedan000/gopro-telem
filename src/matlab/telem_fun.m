@@ -58,13 +58,25 @@ xlabel('sample');
 ylabel('longitude (dec deg)');
 
 %% compute and plot smoothed acceleration
-accl_smooth = smooth(telem.accl.samples);
+accl_smooth10 = smoothMovingAvg(telem.accl.samples, 10);
+accl_smooth100 = smoothMovingAvg(telem.accl.samples, 100);
+accl_smooth200 = smoothMovingAvg(telem.accl.samples, 200);
 figure();
-plot(accl_smooth);
-title('Smoothed Accelerometer');
-xlabel('sample');
-ylabel('acceleration (m/s^2)');
-legend({'x','y','z'},'Location','northwest');
+componentNames = ['X','Y','Z'];
+n_comps = length(componentNames);
+for cc=1:n_comps
+    subplot(n_comps,1,cc);
+    hold on;
+    plot(telem.accl.samples(:,cc));
+    plot(accl_smooth10(:,cc));
+    plot(accl_smooth100(:,cc));
+    plot(accl_smooth200(:,cc));
+    hold off;
+    title(sprintf('Smoothed Acceleration %c', componentNames(cc)));
+    xlabel('sample');
+    ylabel('acceleration (m/s^2)');
+    legend({'accl_raw','accl_smooth10','accl_smooth100','accl_smooth200'},'Location','northwest');
+end
 
 %% compute and plot rotation
 rot_raw = zeros(size(telem.gyro.samples));
