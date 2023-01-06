@@ -13,29 +13,17 @@ namespace gpt
 		return (slope != 0.0 ? a + (slope * ratio) : a);
 	}
 
+	template <typename XYZ_T>
 	void
-	lerp(
-		FloatXYZ &out,
-		const FloatXYZ &a,
-		const FloatXYZ &b,
+	lerpXYZ(
+		XYZ_T &out,
+		const XYZ_T &a,
+		const XYZ_T &b,
 		double ratio)
 	{
 		out.x = lerp(a.x, b.x, ratio);
 		out.y = lerp(a.y, b.y, ratio);
 		out.z = lerp(a.z, b.z, ratio);
-	}
-
-	void
-	lerp(
-		Quat &out,
-		const Quat &a,
-		const Quat &b,
-		double ratio)
-	{
-		out.x = lerp(a.x, b.x, ratio);
-		out.y = lerp(a.y, b.y, ratio);
-		out.z = lerp(a.z, b.z, ratio);
-		out.w = lerp(a.w, b.w, ratio);
 	}
 
 	void
@@ -47,6 +35,49 @@ namespace gpt
 	{
 		out.lat = lerp(a.lat, b.lat, ratio);
 		out.lon = lerp(a.lon, b.lon, ratio);
+	}
+
+	void
+	lerp(
+		AcclSample &out,
+		const AcclSample &a,
+		const AcclSample &b,
+		double ratio)
+	{
+		lerpXYZ(out,a,b,ratio);
+	}
+
+	void
+	lerp(
+		GyroSample &out,
+		const GyroSample &a,
+		const GyroSample &b,
+		double ratio)
+	{
+		lerpXYZ(out,a,b,ratio);
+	}
+
+	void
+	lerp(
+		GravSample &out,
+		const GravSample &a,
+		const GravSample &b,
+		double ratio)
+	{
+		lerpXYZ(out,a,b,ratio);
+	}
+
+	void
+	lerp(
+		OrientationSample &out,
+		const OrientationSample &a,
+		const OrientationSample &b,
+		double ratio)
+	{
+		out.x = lerp(a.x, b.x, ratio);
+		out.y = lerp(a.y, b.y, ratio);
+		out.z = lerp(a.z, b.z, ratio);
+		out.w = lerp(a.w, b.w, ratio);
 	}
 
 	void

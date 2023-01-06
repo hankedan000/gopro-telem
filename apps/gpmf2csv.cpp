@@ -164,7 +164,7 @@ dumpRawToCSV(
 		// accl
 		if (ss < acclSamps.size())
 		{
-			auto accl = acclSamps.at(ss);
+			auto accl = acclSamps.at(ss).sample;
 			fprintf(csvFile,"%+0.06f,%+0.06f,%+0.06f",accl.x,accl.y,accl.z);
 		}
 		else
@@ -175,7 +175,7 @@ dumpRawToCSV(
 		// gyro
 		if (ss < gyroSamps.size())
 		{
-			auto gyro = gyroSamps.at(ss);
+			auto gyro = gyroSamps.at(ss).sample;
 			fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f",gyro.x,gyro.y,gyro.z);
 		}
 		else
@@ -186,7 +186,7 @@ dumpRawToCSV(
 		// grav
 		if (ss < gravSamps.size())
 		{
-			auto grav = gravSamps.at(ss);
+			auto grav = gravSamps.at(ss).sample;
 			fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f",grav.x,grav.y,grav.z);
 		}
 		else
@@ -197,7 +197,7 @@ dumpRawToCSV(
 		// cori
 		if (ss < coriSamps.size())
 		{
-			auto cori = coriSamps.at(ss);
+			auto cori = coriSamps.at(ss).sample;
 			fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f,%+0.06f",cori.w,cori.x,cori.y,cori.z);
 		}
 		else
@@ -208,7 +208,7 @@ dumpRawToCSV(
 		// gps
 		if (ss < gpsSamps.size())
 		{
-			auto gps = gpsSamps.at(ss);
+			auto gps = gpsSamps.at(ss).sample;
 			fprintf(csvFile,",%+0.06f,%+0.06f,%0.03f,%0.03f,%0.03f",gps.coord.lat,gps.coord.lon,gps.altitude,gps.speed2D,gps.speed3D);
 		}
 		else

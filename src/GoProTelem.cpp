@@ -65,11 +65,11 @@ namespace gpt
 			{
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
-				sampOut.coord.lat = tmpbuffer[ss*elements+0];
-				sampOut.coord.lon = tmpbuffer[ss*elements+1];
-				sampOut.altitude  = tmpbuffer[ss*elements+2];
-				sampOut.speed2D   = tmpbuffer[ss*elements+3];
-				sampOut.speed3D   = tmpbuffer[ss*elements+4];
+				sampOut.sample.coord.lat = tmpbuffer[ss*elements+0];
+				sampOut.sample.coord.lon = tmpbuffer[ss*elements+1];
+				sampOut.sample.altitude  = tmpbuffer[ss*elements+2];
+				sampOut.sample.speed2D   = tmpbuffer[ss*elements+3];
+				sampOut.sample.speed3D   = tmpbuffer[ss*elements+4];
 			}
 		}
 
@@ -166,9 +166,9 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.x = tmpbuffer[ss*elements+1] * -1;
-				sampOut.y = tmpbuffer[ss*elements+2] * -1;
-				sampOut.z = tmpbuffer[ss*elements+0] * -1;
+				sampOut.sample.x = tmpbuffer[ss*elements+1] * -1;
+				sampOut.sample.y = tmpbuffer[ss*elements+2] * -1;
+				sampOut.sample.z = tmpbuffer[ss*elements+0] * -1;
 			}
 		}
 
@@ -265,9 +265,9 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.x = tmpbuffer[ss*elements+1];
-				sampOut.y = tmpbuffer[ss*elements+2];
-				sampOut.z = tmpbuffer[ss*elements+0];
+				sampOut.sample.x = tmpbuffer[ss*elements+1];
+				sampOut.sample.y = tmpbuffer[ss*elements+2];
+				sampOut.sample.z = tmpbuffer[ss*elements+0];
 			}
 		}
 
@@ -364,9 +364,9 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.x = tmpbuffer[ss*elements+0] * -1;
-				sampOut.y = tmpbuffer[ss*elements+2] * -1;
-				sampOut.z = tmpbuffer[ss*elements+1] * -1;
+				sampOut.sample.x = tmpbuffer[ss*elements+0] * -1;
+				sampOut.sample.y = tmpbuffer[ss*elements+2] * -1;
+				sampOut.sample.z = tmpbuffer[ss*elements+1] * -1;
 			}
 		}
 
@@ -463,10 +463,10 @@ namespace gpt
 				auto &sampOut = sampsOut.at(ss);
 				sampOut.t_offset  = timeOffset_sec + samp_dt * ss;
 				// Hero 9 data order determined imperically
-				sampOut.w = tmpbuffer[ss*elements+0];
-				sampOut.x = tmpbuffer[ss*elements+1];
-				sampOut.y = tmpbuffer[ss*elements+3];
-				sampOut.z = tmpbuffer[ss*elements+2];
+				sampOut.sample.w = tmpbuffer[ss*elements+0];
+				sampOut.sample.x = tmpbuffer[ss*elements+1];
+				sampOut.sample.y = tmpbuffer[ss*elements+3];
+				sampOut.sample.z = tmpbuffer[ss*elements+2];
 			}
 		}
 
@@ -551,11 +551,11 @@ namespace gpt
 				}
 				else if (gpsIdx == 0)
 				{
-					sampOut.gps = gpsSamps.at(gpsIdx);
+					sampOut.gps = gpsSamps.at(gpsIdx).sample;
 				}
 				else
 				{
-					sampOut.gps = gpsSamps.at(gpsSamps.size() - 1);
+					sampOut.gps = gpsSamps.at(gpsSamps.size() - 1).sample;
 				}
 			}
 
@@ -573,11 +573,11 @@ namespace gpt
 				}
 				else if (acclIdx == 0)
 				{
-					sampOut.accl = acclSamps.at(acclIdx);
+					sampOut.accl = acclSamps.at(acclIdx).sample;
 				}
 				else
 				{
-					sampOut.accl = acclSamps.at(acclSamps.size() - 1);
+					sampOut.accl = acclSamps.at(acclSamps.size() - 1).sample;
 				}
 			}
 
@@ -595,11 +595,11 @@ namespace gpt
 				}
 				else if (gyroIdx == 0)
 				{
-					sampOut.gyro = gyroSamps.at(gyroIdx);
+					sampOut.gyro = gyroSamps.at(gyroIdx).sample;
 				}
 				else
 				{
-					sampOut.gyro = gyroSamps.at(gyroSamps.size() - 1);
+					sampOut.gyro = gyroSamps.at(gyroSamps.size() - 1).sample;
 				}
 			}
 
@@ -617,11 +617,11 @@ namespace gpt
 				}
 				else if (gravIdx == 0)
 				{
-					sampOut.grav = gravSamps.at(gravIdx);
+					sampOut.grav = gravSamps.at(gravIdx).sample;
 				}
 				else
 				{
-					sampOut.grav = gravSamps.at(gravSamps.size() - 1);
+					sampOut.grav = gravSamps.at(gravSamps.size() - 1).sample;
 				}
 			}
 
@@ -639,11 +639,11 @@ namespace gpt
 				}
 				else if (coriIdx == 0)
 				{
-					sampOut.cori = coriSamps.at(coriIdx);
+					sampOut.cori = coriSamps.at(coriIdx).sample;
 				}
 				else
 				{
-					sampOut.cori = coriSamps.at(coriSamps.size() - 1);
+					sampOut.cori = coriSamps.at(coriSamps.size() - 1).sample;
 				}
 			}
 		}

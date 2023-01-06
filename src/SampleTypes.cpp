@@ -7,172 +7,179 @@ namespace gpt
 {
 
 	std::string
-	TimedSample::toString(
-		bool withBraces) const
+	toString(
+		const CoordLL &coord,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			std::fixed << std::setprecision(3) <<
-			"t_offset: " << t_offset <<
+			std::fixed << std::setprecision(6) <<
+			"lat: " << coord.lat << ", "
+			"lon: " << coord.lon <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	FloatXYZ::toString(
-			bool withBraces) const
-	{
-		std::stringstream ss;
-		ss << (withBraces ? "{ " : "") <<
-			std::fixed << std::setprecision(3) << std::showpos <<
-			"x: " << x << ", "
-			"y: " << y << ", "
-			"z: " << z <<
-			(withBraces ? " }" : "");
-		return ss.str();
-	}
-
-	std::string
-	Quat::toString(
-			bool withBraces) const
+	toString(
+		const AcclSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) << std::showpos <<
-			"w: " << w << ", "
-			"x: " << x << ", "
-			"y: " << y << ", "
-			"z: " << z <<
+			"x: " << sample.x << ", "
+			"y: " << sample.y << ", "
+			"z: " << sample.z <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	CoordLL::toString(
-			bool withBraces) const
+	toString(
+		const GyroSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			"lat: " << std::fixed << std::setprecision(6) << lat << ", "
-			"lon: " << lon <<
+			std::fixed << std::setprecision(3) << std::showpos <<
+			"x: " << sample.x << ", "
+			"y: " << sample.y << ", "
+			"z: " << sample.z <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	AcclSample::toString(
-			bool withBraces) const
-	{
-		return FloatXYZ::toString(withBraces);
-	}
-
-	std::string
-	GyroSample::toString(
-			bool withBraces) const
-	{
-		return FloatXYZ::toString(withBraces);
-	}
-
-	std::string
-	GravSample::toString(
-			bool withBraces) const
-	{
-		return FloatXYZ::toString(withBraces);
-	}
-
-	std::string
-	OrientationSample::toString(
-			bool withBraces) const
-	{
-		return Quat::toString(withBraces);
-	}
-
-	std::string
-	GPS_Sample::toString(
-			bool withBraces) const
+	toString(
+		const GravSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			"coord: " << coord.toString(true) << ", " <<
+			std::fixed << std::setprecision(3) << std::showpos <<
+			"x: " << sample.x << ", "
+			"y: " << sample.y << ", "
+			"z: " << sample.z <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
+	toString(
+		const OrientationSample &sample,
+		bool withBraces)
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			std::fixed << std::setprecision(3) << std::showpos <<
+			"w: " << sample.w << ", "
+			"x: " << sample.x << ", "
+			"y: " << sample.y << ", "
+			"z: " << sample.z <<
+			(withBraces ? " }" : "");
+		return ss.str();
+	}
+
+	std::string
+	toString(
+		const GPS_Sample &sample,
+		bool withBraces)
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ " : "") <<
+			"coord: " << toString(sample.coord,true) << ", " <<
 			std::fixed << std::setprecision(3) <<
-			"altitude: " << altitude << ", " <<
-			"speed2D: " << speed2D << ", " <<
-			"speed3D: " << speed3D <<
+			"altitude: " << sample.altitude << ", " <<
+			"speed2D: " << sample.speed2D << ", " <<
+			"speed3D: " << sample.speed3D <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	GPS_TimedSample::toString(
-			bool withBraces) const
+	toString(
+		const GPS_TimedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			TimedSample::toString() << ", " <<
-			GPS_Sample::toString() <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	AcclTimedSample::toString(
-			bool withBraces) const
+	toString(
+		const AcclTimedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			TimedSample::toString() << ", " <<
-			AcclSample::toString() <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	GyroTimedSample::toString(
-			bool withBraces) const
+	toString(
+		const GyroTimedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			TimedSample::toString() << ", " <<
-			GyroSample::toString() <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	GravTimedSample::toString(
-			bool withBraces) const
+	toString(
+		const GravTimedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			TimedSample::toString() << ", " <<
-			GravSample::toString() <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	OrientationTimedSample::toString(
-			bool withBraces) const
+	toString(
+		const OrientationTimedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ " : "") <<
-			TimedSample::toString() << ", " <<
-			OrientationSample::toString() <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
 
 	std::string
-	CombinedSample::toString(
-		bool withBraces) const
+	toString(
+		const CombinedSample &sample,
+		bool withBraces)
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ \n" : "") <<
-			(withBraces ? "  " : "") << TimedSample::toString() << ", " << std::endl <<
-			(withBraces ? "  " : "") << "accl: " << accl.toString(true) << std::endl <<
-			(withBraces ? "  " : "") << "gyro: " << gyro.toString(true) << std::endl <<
-			(withBraces ? "  " : "") << "grav: " << grav.toString(true) << std::endl <<
-			(withBraces ? "  " : "") << "gps: " << gps.toString(true) <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			(withBraces ? "  " : "") << "accl: " << toString(sample.accl,true) << std::endl <<
+			(withBraces ? "  " : "") << "gyro: " << toString(sample.gyro,true) << std::endl <<
+			(withBraces ? "  " : "") << "grav: " << toString(sample.grav,true) << std::endl <<
+			(withBraces ? "  " : "") << "gps: " << toString(sample.gps,true) <<
 			(withBraces ? "\n}" : "");
 		return ss.str();
 	}
