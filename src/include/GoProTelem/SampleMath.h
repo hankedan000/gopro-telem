@@ -13,18 +13,12 @@ namespace gpt
 		double b,
 		double ratio);
 
+	template <typename XZY_T>
 	void
-	lerp(
-		FloatXYZ &out,
-		const FloatXYZ &a,
-		const FloatXYZ &b,
-		double ratio);
-
-	void
-	lerp(
-		Quat &out,
-		const Quat &a,
-		const Quat &b,
+	lerpXYZ(
+		XZY_T &out,
+		const XZY_T &a,
+		const XZY_T &b,
 		double ratio);
 
 	void
@@ -32,6 +26,34 @@ namespace gpt
 		CoordLL &out,
 		const CoordLL &a,
 		const CoordLL &b,
+		double ratio);
+
+	void
+	lerp(
+		AcclSample &out,
+		const AcclSample &a,
+		const AcclSample &b,
+		double ratio);
+
+	void
+	lerp(
+		GyroSample &out,
+		const GyroSample &a,
+		const GyroSample &b,
+		double ratio);
+
+	void
+	lerp(
+		GravSample &out,
+		const GravSample &a,
+		const GravSample &b,
+		double ratio);
+
+	void
+	lerp(
+		OrientationSample &out,
+		const OrientationSample &a,
+		const OrientationSample &b,
 		double ratio);
 
 	void
@@ -95,7 +117,7 @@ namespace gpt
 	{
 		const double dt = b.t_offset - a.t_offset;
 		const double ratio = (timePoint - a.t_offset) / dt;
-		lerp(out, a, b, ratio);
+		lerp(out, a.sample, b.sample, ratio);
 	}
 
 }

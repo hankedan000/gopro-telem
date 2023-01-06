@@ -56,14 +56,14 @@ SampleMathTest::lerpTests()
 	// test timed sample lerp
 	gpt::AcclTimedSample acclT_A;
 	acclT_A.t_offset = 1234.0;
-	acclT_A.x = 1.0;
-	acclT_A.y = 2.0;
-	acclT_A.z = 3.0;
+	acclT_A.sample.x = 1.0;
+	acclT_A.sample.y = 2.0;
+	acclT_A.sample.z = 3.0;
 	gpt::AcclTimedSample acclT_B;
 	acclT_B.t_offset = 1235.0;
-	acclT_B.x = 2.0;
-	acclT_B.y = 4.0;
-	acclT_B.z = 6.0;
+	acclT_B.sample.x = 2.0;
+	acclT_B.sample.y = 4.0;
+	acclT_B.sample.z = 6.0;
 	gpt::lerpTimedSample(acclC,acclT_A,acclT_B,1234.5);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(1.5,acclC.x,0.001);
 	CPPUNIT_ASSERT_DOUBLES_EQUAL(3.0,acclC.y,0.001);

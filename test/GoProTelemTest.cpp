@@ -173,9 +173,9 @@ GoProTelemTest::acclOrientation()
 		CPPUNIT_ASSERT(samps.size() > 0);
 
 		auto samp = samps.at(0);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.x,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.y,1.5);
-		CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.8,samp.z,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,samp.sample.x,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL( 0.0,samp.sample.y,1.5);
+		CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.8,samp.sample.z,1.5);
 	}
 }
 

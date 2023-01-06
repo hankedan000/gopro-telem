@@ -5,157 +5,160 @@
 namespace gpt
 {
 
-	class TimedSample
+	struct CoordLL
 	{
-	public:
+		double lat,lon;// deg
+	};
+
+	std::string
+	toString(
+		const CoordLL &coord,
+		bool withBraces = false);
+
+	struct AcclSample
+	{
+		float x,y,z;// m/s^2
+	};
+
+	std::string
+	toString(
+		const AcclSample &sample,
+		bool withBraces = false);
+
+	struct AcclTimedSample
+	{
+		AcclSample sample;
+
 		// time offset relative to video's start in seconds.
 		// This value is based off the GPMF payload's in/out times.
 		double t_offset;
-
-		std::string
-		toString(
-			bool withBraces = false) const;
 	};
 
-	class FloatXYZ
-	{
-	public:
-		float x,y,z;
+	std::string
+	toString(
+		const AcclTimedSample &sample,
+		bool withBraces = false);
 
-		std::string
-		toString(
-			bool withBraces = false) const;
+	struct GyroSample
+	{
+		float x,y,z;// rad/s
 	};
 
-	class Quat
+	std::string
+	toString(
+		const GyroSample &sample,
+		bool withBraces = false);
+
+	struct GyroTimedSample
 	{
-	public:
+		GyroSample sample;
+
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
+		double t_offset;
+	};
+
+	std::string
+	toString(
+		const GyroTimedSample &sample,
+		bool withBraces = false);
+
+	struct GravSample
+	{
+		float x,y,z;// G-force
+	};
+
+	std::string
+	toString(
+		const GravSample &sample,
+		bool withBraces = false);
+
+	struct GravTimedSample
+	{
+		GravSample sample;
+
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
+		double t_offset;
+	};
+
+	std::string
+	toString(
+		const GravTimedSample &sample,
+		bool withBraces = false);
+
+	struct OrientationSample
+	{
 		float w,x,y,z;
-
-		std::string
-		toString(
-			bool withBraces = false) const;
 	};
 
-	class CoordLL
-	{
-	public:
-		double lat,lon;// deg
+	std::string
+	toString(
+		const OrientationSample &sample,
+		bool withBraces = false);
 
-		std::string
-		toString(
-			bool withBraces = false) const;
+	struct OrientationTimedSample
+	{
+		OrientationSample sample;
+
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
+		double t_offset;
 	};
 
-	class AcclSample : public FloatXYZ
+	std::string
+	toString(
+		const OrientationTimedSample &sample,
+		bool withBraces = false);
+
+	struct GPS_Sample
 	{
-		// m/s^2
-
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class GyroSample : public FloatXYZ
-	{
-		// rad/s
-
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class GravSample : public FloatXYZ
-	{
-		// G-force
-
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class OrientationSample : public Quat
-	{
-
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class GPS_Sample
-	{
-	public:
 		CoordLL coord;
 		double altitude;// m
 		double speed2D; // m/s
 		double speed3D; // m/s
-
-		std::string
-		toString(
-			bool withBraces = false) const;
 	};
 
-	class AcclTimedSample : public AcclSample, public TimedSample
+	std::string
+	toString(
+		const GPS_Sample &sample,
+		bool withBraces = false);
+
+	struct GPS_TimedSample
 	{
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
+		GPS_Sample sample;
+
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
+		double t_offset;
 	};
 
-	class GyroTimedSample : public GyroSample, public TimedSample
-	{
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class GravTimedSample : public GravSample, public TimedSample
-	{
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class OrientationTimedSample : public OrientationSample, public TimedSample
-	{
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
-
-	class GPS_TimedSample : public GPS_Sample, public TimedSample
-	{
-	public:
-		std::string
-		toString(
-			bool withBraces = false) const;
-	};
+	std::string
+	toString(
+		const GPS_TimedSample &sample,
+		bool withBraces = false);
 
 	const size_t SAMPLE_INFO_HAS_ACCL = 1;
 	const size_t SAMPLE_INFO_HAS_GYRO = 2;
 	const size_t SAMPLE_INFO_HAS_GPS  = 3;
 	using SampleInfoBitSet = std::bitset<32>;
 
-	class CombinedSample : public TimedSample
+	struct CombinedSample
 	{
-	public:
 		AcclSample accl;
 		GyroSample gyro;
 		GravSample grav;
 		OrientationSample cori;// camera orientation
 		GPS_Sample gps;
 
-		std::string
-		toString(
-			bool withBraces = false) const;
+		// time offset relative to video's start in seconds.
+		// This value is based off the GPMF payload's in/out times.
+		double t_offset;
 	};
+
+	std::string
+	toString(
+		const CombinedSample &sample,
+		bool withBraces = false);
 
 }
