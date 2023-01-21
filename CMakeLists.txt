@@ -42,7 +42,7 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	# Update submodules as needed
 	option(GOPROTELEM_GIT_SUBMODULE "Check submodules during build" ON)
 	if(GOPROTELEM_GIT_SUBMODULE)
-		message(STATUS "${CMAKE_PROJECT_NAME} - Submodule update")
+		message(STATUS "${PROJECT_NAME} - Submodule update")
 		execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
 						WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 						RESULT_VARIABLE GIT_SUBMOD_RESULT)
@@ -59,12 +59,12 @@ add_subdirectory(src)
 # Build binaries
 # ---------------------------------------------------------------------------------------
 if (GOPROTELEM_BUILD_APPS OR GOPROTELEM_BUILD_ALL)
-	message(STATUS "${CMAKE_PROJECT_NAME} - Generating apps")
+	message(STATUS "${PROJECT_NAME} - Generating apps")
 	add_subdirectory(apps)
 endif()
 
 if (GOPROTELEM_BUILD_TESTS OR GOPROTELEM_BUILD_ALL)
-	message(STATUS "${CMAKE_PROJECT_NAME} - Generating tests")
+	message(STATUS "${PROJECT_NAME} - Generating tests")
 	include(CTest)
 	add_subdirectory(test)
 endif()
