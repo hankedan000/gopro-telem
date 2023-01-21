@@ -8,7 +8,7 @@
 
 #include "GoProTelem/GoProTelem.h"
 
-const char *PROG_NAME = "gpmf-dump";
+const char *PROG_NAME = "gpmfdump";
 bool stop_app = false;
 
 struct ProgOptions

@@ -26,9 +26,18 @@ target_link_libraries(GoProTelem
 # generate the version header
 configure_file("include/version.h.in" "include/version.h")
 
+set(LIB_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/include/GoProTelem")
+
 # build a list of public header files to install
 list(APPEND ${LIBNAME_ALL_UPPER}_PUBLIC_HEADERS
-	"include/GoProTelem.h"
+	"${LIB_INCLUDE_DIR}/FourCC.h"
+	"${LIB_INCLUDE_DIR}/GoProTelem.h"
+	"${LIB_INCLUDE_DIR}/GPMF_Payload.h"
+	"${LIB_INCLUDE_DIR}/GPMF_Stream.h"
+	"${LIB_INCLUDE_DIR}/MP4_Source.h"
+	"${LIB_INCLUDE_DIR}/SampleMath.h"
+	"${LIB_INCLUDE_DIR}/SampleTypes.h"
+	"${LIB_INCLUDE_DIR}/Types.h"
 	"${CMAKE_CURRENT_BINARY_DIR}/include/version.h"
 )
 set_target_properties(GoProTelem PROPERTIES
@@ -38,11 +47,11 @@ install(
 	TARGETS GoProTelem
 	EXPORT GoProTelemTargets
 	ARCHIVE
-		DESTINATION "lib/${MULTI_ARCH_SUFFIX}/${LIBNAME_ALL_LOWER}"
+		DESTINATION "${CMAKE_INSTALL_LIBDIR}/${MULTI_ARCH_SUFFIX}/${LIBRARY_INSTALL_DIR_NAME}"
 	LIBRARY
-		DESTINATION "lib/${MULTI_ARCH_SUFFIX}/${LIBNAME_ALL_LOWER}"
+		DESTINATION "${CMAKE_INSTALL_LIBDIR}/${MULTI_ARCH_SUFFIX}/${LIBRARY_INSTALL_DIR_NAME}"
 	PUBLIC_HEADER
-		DESTINATION "include/${LIBNAME_ALL_LOWER}"
+		DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/${LIBRARY_INSTALL_DIR_NAME}"
 )
 
 # so this target can be used
