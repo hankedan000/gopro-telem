@@ -1,3 +1,5 @@
+find_package(cppunit REQUIRED)
+
 add_definitions(-DTEST_VIDEOS_DIR="${CMAKE_CURRENT_SOURCE_DIR}/test_videos")
 
 add_executable(GoProTelemTest GoProTelemTest.cpp)

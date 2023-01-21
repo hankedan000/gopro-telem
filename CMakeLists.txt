@@ -1,10 +1,30 @@
 cmake_minimum_required (VERSION 3.1)
 
-set(LIBNAME_ALL_UPPER "GOPRO_TELEM")
-# used for things like header install dir '/usr/lib/include/gopro_telem'
-set(LIBNAME_ALL_LOWER "gopro_telem")
+set(LIBNAME_ALL_UPPER "GOPROTELEM")
+# used for things like header install dir '/usr/lib/include/goprotelem'
+set(LIBNAME_ALL_LOWER "goprotelem")
 
 project(GoProTelem VERSION 1.0.0)
+
+# ---------------------------------------------------------------------------------------
+# Set GOPROTELEM_MASTER_PROJECT to ON if we are building GoProTelem
+# ---------------------------------------------------------------------------------------
+# Check if GoProTelem is being used directly or via add_subdirectory, but allow overriding
+if(NOT DEFINED GOPROTELEM_MASTER_PROJECT)
+    if(CMAKE_CURRENT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+        set(GOPROTELEM_MASTER_PROJECT ON)
+    else()
+        set(GOPROTELEM_MASTER_PROJECT OFF)
+    endif()
+endif()
+
+option(GOPROTELEM_BUILD_ALL "Build all artifacts" OFF)
+
+# application options
+option(GOPROTELEM_BUILD_APPS "Build apps" ${GOPROTELEM_MASTER_PROJECT})
+
+# testing options
+option(GOPROTELEM_BUILD_TESTS "Build tests" ${GOPROTELEM_MASTER_PROJECT})
 
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
@@ -20,9 +40,9 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 find_package(Git QUIET)
 if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 	# Update submodules as needed
-	option(GIT_SUBMODULE "Check submodules during build" ON)
-	if(GIT_SUBMODULE)
-		message(STATUS "Submodule update")
+	option(GOPROTELEM_GIT_SUBMODULE "Check submodules during build" ON)
+	if(GOPROTELEM_GIT_SUBMODULE)
+		message(STATUS "${CMAKE_PROJECT_NAME} - Submodule update")
 		execute_process(COMMAND ${GIT_EXECUTABLE} submodule update --init --recursive
 						WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
 						RESULT_VARIABLE GIT_SUBMOD_RESULT)
@@ -34,13 +54,17 @@ endif()
 
 add_subdirectory(dependencies)
 add_subdirectory(src)
-add_subdirectory(apps)
 
-# use cppunit for testing
-find_package(cppunit)
-# enable testing if root project is us
-if (CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME AND CPPUNIT_FOUND)
+# ---------------------------------------------------------------------------------------
+# Build binaries
+# ---------------------------------------------------------------------------------------
+if (GOPROTELEM_BUILD_APPS OR GOPROTELEM_BUILD_ALL)
+	message(STATUS "${CMAKE_PROJECT_NAME} - Generating apps")
+	add_subdirectory(apps)
+endif()
+
+if (GOPROTELEM_BUILD_TESTS OR GOPROTELEM_BUILD_ALL)
+	message(STATUS "${CMAKE_PROJECT_NAME} - Generating tests")
 	include(CTest)
-	set(BUILD_TESTING "ON")
 	add_subdirectory(test)
 endif()
