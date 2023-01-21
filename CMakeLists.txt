@@ -1,8 +1,9 @@
 cmake_minimum_required (VERSION 3.1)
 
 set(LIBNAME_ALL_UPPER "GOPROTELEM")
-# used for things like header install dir '/usr/lib/include/goprotelem'
 set(LIBNAME_ALL_LOWER "goprotelem")
+# used for things like header install dir '/usr/lib/include/GoProTelem'
+set(LIBRARY_INSTALL_DIR_NAME "GoProTelem")
 
 project(GoProTelem VERSION 1.0.0)
 
@@ -35,6 +36,8 @@ set(MULTI_ARCH_SUFFIX "${CMAKE_SYSTEM_PROCESSOR}-${SYSTEM_NAME_LOWER}-${COMPILER
 
 # add project's module directory to CMAKE_MODULE_PATH
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
+
+include(GNUInstallDirs)
 
 # update all submodules
 find_package(Git QUIET)
