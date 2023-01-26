@@ -24,13 +24,8 @@ namespace gpt
 			return sampsOut;
 		}
 
-		char* rawdata = (char*)stream->rawData();
-		FourCC key = stream->key();
-		char type = stream->type();
 		uint32_t samples = stream->repeat();
 		uint32_t elements = stream->elementsInStruct();
-		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
-
 		if (samples == 0)
 		{
 			return sampsOut;
@@ -53,7 +48,7 @@ namespace gpt
 		}
 
 		size_t buffersize = samples * elements * sizeof(double);
-		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		double *tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
 			printf("FAILED TO READ GPS samples!\n");
@@ -96,7 +91,6 @@ namespace gpt
 		size_t payloadCount = mp4.payloadCount();
 		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
 		{
-			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadGPS_Samples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
@@ -124,13 +118,8 @@ namespace gpt
 			return sampsOut;
 		}
 
-		char* rawdata = (char*)stream->rawData();
-		FourCC key = stream->key();
-		char type = stream->type();
 		uint32_t samples = stream->repeat();
 		uint32_t elements = stream->elementsInStruct();
-		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
-
 		if (samples == 0)
 		{
 			return sampsOut;
@@ -153,7 +142,7 @@ namespace gpt
 		}
 
 		size_t buffersize = samples * elements * sizeof(double);
-		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		double *tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
 			printf("Failed to read accl samples!\n");
@@ -195,7 +184,6 @@ namespace gpt
 		size_t payloadCount = mp4.payloadCount();
 		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
 		{
-			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadAcclSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
@@ -223,13 +211,8 @@ namespace gpt
 			return sampsOut;
 		}
 
-		char* rawdata = (char*)stream->rawData();
-		FourCC key = stream->key();
-		char type = stream->type();
 		uint32_t samples = stream->repeat();
 		uint32_t elements = stream->elementsInStruct();
-		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
-
 		if (samples == 0)
 		{
 			return sampsOut;
@@ -252,7 +235,7 @@ namespace gpt
 		}
 
 		size_t buffersize = samples * elements * sizeof(double);
-		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		double *tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
 			printf("Failed to read gyro samples!\n");
@@ -294,7 +277,6 @@ namespace gpt
 		size_t payloadCount = mp4.payloadCount();
 		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
 		{
-			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadGyroSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
@@ -322,13 +304,8 @@ namespace gpt
 			return sampsOut;
 		}
 
-		char* rawdata = (char*)stream->rawData();
-		FourCC key = stream->key();
-		char type = stream->type();
 		uint32_t samples = stream->repeat();
 		uint32_t elements = stream->elementsInStruct();
-		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
-
 		if (samples == 0)
 		{
 			return sampsOut;
@@ -351,7 +328,7 @@ namespace gpt
 		}
 
 		size_t buffersize = samples * elements * sizeof(double);
-		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		double *tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
 			printf("Failed to read gravity samples!\n");
@@ -393,7 +370,6 @@ namespace gpt
 		size_t payloadCount = mp4.payloadCount();
 		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
 		{
-			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadGravSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());
@@ -421,13 +397,8 @@ namespace gpt
 			return sampsOut;
 		}
 
-		char* rawdata = (char*)stream->rawData();
-		FourCC key = stream->key();
-		char type = stream->type();
 		uint32_t samples = stream->repeat();
 		uint32_t elements = stream->elementsInStruct();
-		// printf("%d samples of type %c -- %d elements per samples\n", samples, type, elements);
-
 		if (samples == 0)
 		{
 			return sampsOut;
@@ -450,7 +421,7 @@ namespace gpt
 		}
 
 		size_t buffersize = samples * elements * sizeof(double);
-		double* ptr, * tmpbuffer = (double*)malloc(buffersize);
+		double *tmpbuffer = (double*)malloc(buffersize);
 		if ( ! stream->getScaledDataDoubles(tmpbuffer,buffersize,0,samples))
 		{
 			printf("Failed to read camera orientation samples!\n");
@@ -493,7 +464,6 @@ namespace gpt
 		size_t payloadCount = mp4.payloadCount();
 		for (size_t pIdx=0; pIdx<payloadCount; pIdx++)
 		{
-			// printf("pIdx = %ld\n", pIdx);
 			auto payloadPtr = mp4.getPayload(pIdx);
 			auto pSamps = getPayloadCoriSamples(payloadPtr,timeOffset_sec,sampleRate_hz);
 			sampsOut.insert(sampsOut.end(), pSamps.begin(), pSamps.end());

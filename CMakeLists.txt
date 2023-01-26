@@ -56,6 +56,10 @@ if(GIT_FOUND AND EXISTS "${PROJECT_SOURCE_DIR}/.git")
 endif()
 
 add_subdirectory(dependencies)
+
+# enable compiler warnings and treat them as errors for this library
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
+
 add_subdirectory(src)
 
 # ---------------------------------------------------------------------------------------

@@ -97,7 +97,7 @@ namespace gpt
 		auto currState = reinterpret_cast<GPMF_stream *>(stream_);
 		auto state = reinterpret_cast<GPMF_stream *>(stateStack_.top());
 		stateStack_.pop();
-		int copyRet = GPMF_CopyState(state,currState);
+		GPMF_CopyState(state,currState);
 		delete(state);
 	}
 
