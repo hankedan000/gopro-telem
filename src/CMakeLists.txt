@@ -23,6 +23,13 @@ target_link_libraries(GoProTelem
 		gpmf-mp4reader
 		gpmf-parser)
 
+if (${CMAKE_CXX_STANDARD} LESS 17)
+	# for std::experimental::filesystem support
+	target_link_libraries(GoProTelem
+		PUBLIC
+			stdc++fs)
+endif()
+
 # generate the version header
 configure_file("include/version.h.in" "include/version.h")
 

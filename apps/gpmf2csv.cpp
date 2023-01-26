@@ -1,6 +1,5 @@
 #include <cstdio>
 #include <csignal>
-#include <filesystem>
 #include <getopt.h>
 #include <iostream>
 #include <limits>
@@ -96,7 +95,7 @@ dumpRawToCSV(
     // if sourceFilePath = "/tmp/GH010143.MP4", then
     // csvFileName = "GH010143_telemetry_raw.csv"
     // csvFilePath = "/tmp/GH010143_telemetry_raw.csv"
-    auto sourceFilePath = std::filesystem::path(opts.inputFile);
+    auto sourceFilePath = gpt::filesystem::path(opts.inputFile);
     auto csvFileName = sourceFilePath.stem().string() + "_telemetry_raw.csv";
     auto csvFilePath = sourceFilePath.parent_path() / csvFileName;
     auto csvFile = fopen(csvFilePath.c_str(),"w");
@@ -231,7 +230,7 @@ dumpCombinedToCSV(
     // if sourceFilePath = "/tmp/GH010143.MP4", then
     // csvFileName = "GH010143_telemetry_combined.csv"
     // csvFilePath = "/tmp/GH010143_telemetry_combined.csv"
-    auto sourceFilePath = std::filesystem::path(opts.inputFile);
+    auto sourceFilePath = gpt::filesystem::path(opts.inputFile);
     auto csvFileName = sourceFilePath.stem().string() + "_telemetry_combined.csv";
     auto csvFilePath = sourceFilePath.parent_path() / csvFileName;
     auto csvFile = fopen(csvFilePath.c_str(),"w");

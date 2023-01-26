@@ -60,6 +60,16 @@ add_subdirectory(dependencies)
 # enable compiler warnings and treat them as errors for this library
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Werror")
 
+# set the C++ standard
+# this library depends on C++17 features like std::filesystem, but
+# can falling back to C++11 via the use of std::experimental::filesystem
+if(GOPROTELEM_CXX_STANDARD)
+	set(CMAKE_CXX_STANDARD ${GOPROTELEM_CXX_STANDARD})
+else()
+	set(CMAKE_CXX_STANDARD 17)
+endif()
+message(STATUS "Building ${PROJECT_NAME} using C++${CMAKE_CXX_STANDARD}")
+
 add_subdirectory(src)
 
 # ---------------------------------------------------------------------------------------

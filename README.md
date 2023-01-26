@@ -1,7 +1,28 @@
 # gopro-telem 
 A C++ wrapper around GoPro's [gpmf-parser](https://github.com/gopro/gpmf-parser) library.
 
-# Building
+## Integration
+
+### C++ Version
+While C++17 is recommended, C++11 is the minimum version required. This library makes use of std::filesystem, and uses
+[std::experimental::filesystem](https://en.cppreference.com/w/cpp/header/experimental/filesystem) if using C++11 or C++14.
+
+### CMake Instructions
+If you're including this in another CMake project, you can simply clone this repo into your project directory, 
+and add the following to your CMakeLists.txt:
+
+```cmake
+# Optional: Defaults to C++ 17
+# set(GOPROTELEM_CXX_STANDARD 11)
+add_subdirectory(gopro-telem)
+
+# ...
+
+add_executable(<your program> ...)
+target_link_libraries(<your program> GoProTelem::GoProTelem)
+```
+
+## Building
 Pretty standard CMake build procedure.
 
 ``` bash
@@ -11,7 +32,7 @@ cmake ..
 make -j
 ```
 
-# Testing
+## Testing
 The repo contains a few cppunit tests. You can run them all after a build with `make test`. You should get output similar to this.
 
 ``` bash

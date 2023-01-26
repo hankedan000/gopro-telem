@@ -8,8 +8,28 @@
 #include "GoProTelem/MP4_Source.h"
 #include "GoProTelem/SampleTypes.h"
 
+// includes for std::filesystem
+// std::filesystem wasn't fully supported until C++17.
+// the experimental support that exists in C++14 is good enough for
+// what we need, so fallback to that if possible.
+#ifndef __has_include
+  static_assert(false, "__has_include not supported");
+#else
+#  if __cplusplus >= 201703L && __has_include(<filesystem>)
+#    include <filesystem>
+     namespace _gpt_fs = std::filesystem;
+#  elif __has_include(<experimental/filesystem>)
+#    include <experimental/filesystem>
+     namespace _gpt_fs = std::experimental::filesystem;
+#  endif
+#endif
+
 namespace gpt
 {
+
+	// so we can use gpt::filesystem in all our code and toggle the underlying
+	// std version that is used
+	namespace filesystem = _gpt_fs;
 
 	/**
 	 * @param[in] pl
