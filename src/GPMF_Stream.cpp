@@ -286,7 +286,10 @@ namespace gpt
 	{
 		checkTypeAndThrow('f');
 		auto intValue = readInt<uint32_t>();
-		return *reinterpret_cast<float*>(&intValue);
+		static_assert(sizeof(float) == sizeof(uint32_t), "`float` has a weird size.");
+		float floatValue;
+		memcpy(&floatValue, &intValue, sizeof(float));
+		return floatValue;
 	}
 
 	double
@@ -294,7 +297,10 @@ namespace gpt
 	{
 		checkTypeAndThrow('d');
 		auto intValue = readInt<uint64_t>();
-		return *reinterpret_cast<double*>(&intValue);
+		static_assert(sizeof(double) == sizeof(uint64_t), "`double` has a weird size.");
+		double doubleValue;
+		memcpy(&doubleValue, &intValue, sizeof(uint64_t));
+		return doubleValue;
 	}
 
 	std::string
@@ -435,7 +441,7 @@ namespace gpt
 				Endianness::eEndianBig );
 		}
 
-		INT_T outInt;
+		INT_T outInt = 0;
 		if (endianness == Endianness::eEndianBig)
 		{
 			// rawdata is already stored in big endian, so just do regular case
