@@ -89,21 +89,22 @@ GoProTelemTest::getCombinedSamples()
 	const double sampRate = mp4.fps();
 	const double samplDt = 1.0 / sampRate;
 
-	auto samps = gpt::getCombinedSamples(mp4);
+	auto samps = gpt::getCombinedTimedSamples(mp4);
 	CPPUNIT_ASSERT_EQUAL(frameCount, samps.size());
 
 	double prevTimeOffset = -1;
-	for (const auto &samp : samps)
+	for (const auto &tSamp : samps)
 	{
 		if (prevTimeOffset >= 0.0)
 		{
 			CPPUNIT_ASSERT_DOUBLES_EQUAL(
 				samplDt,
-				(samp.t_offset - prevTimeOffset),
+				(tSamp.t_offset - prevTimeOffset),
 				0.001);
 		}
-		prevTimeOffset = samp.t_offset;
+		prevTimeOffset = tSamp.t_offset;
 
+		const auto &samp = tSamp.sample;
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.x,0.3);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(-9.8,samp.accl.y,0.3);
 		CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0,samp.accl.z,0.3);

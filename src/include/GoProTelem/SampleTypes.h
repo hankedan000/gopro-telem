@@ -150,6 +150,16 @@ namespace gpt
 		GravSample grav;
 		OrientationSample cori;// camera orientation
 		GPS_Sample gps;
+	};
+
+	std::string
+	toString(
+		const CombinedSample &sample,
+		bool withBraces = false);
+
+	struct CombinedTimedSample
+	{
+		CombinedSample sample;
 
 		// time offset relative to video's start in seconds.
 		// This value is based off the GPMF payload's in/out times.
@@ -158,7 +168,7 @@ namespace gpt
 
 	std::string
 	toString(
-		const CombinedSample &sample,
+		const CombinedTimedSample &sample,
 		bool withBraces = false);
 
 }

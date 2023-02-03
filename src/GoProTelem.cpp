@@ -505,19 +505,19 @@ namespace gpt
 		for (size_t ff=0; ff<frameCount; ff++)
 		{
 			auto &sampOut = sampsOut.at(ff);
-			sampOut.t_offset = ff * frameDt;
+			double outTime = ff * frameDt;
 
 			// GPS sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool gpsFound = findLerpIndex(gpsIdx,gpsSamps,sampOut.t_offset);
+				bool gpsFound = findLerpIndex(gpsIdx,gpsSamps,outTime);
 
 				// perform interpolation
 				if (gpsFound)
 				{
 					auto &sampA = gpsSamps.at(gpsIdx);
 					auto &sampB = gpsSamps.at(gpsIdx+1);
-					lerpTimedSample(sampOut.gps, sampA, sampB, sampOut.t_offset);
+					lerpTimedSample(sampOut.gps, sampA, sampB, outTime);
 				}
 				else if (gpsIdx == 0)
 				{
@@ -532,14 +532,14 @@ namespace gpt
 			// accelerometer sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool acclFound = findLerpIndex(acclIdx,acclSamps,sampOut.t_offset);
+				bool acclFound = findLerpIndex(acclIdx,acclSamps,outTime);
 
 				// perform interpolation
 				if (acclFound)
 				{
 					auto &sampA = acclSamps.at(acclIdx);
 					auto &sampB = acclSamps.at(acclIdx+1);
-					lerpTimedSample(sampOut.accl, sampA, sampB, sampOut.t_offset);
+					lerpTimedSample(sampOut.accl, sampA, sampB, outTime);
 				}
 				else if (acclIdx == 0)
 				{
@@ -554,14 +554,14 @@ namespace gpt
 			// gyro sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool gyroFound = findLerpIndex(gyroIdx,gyroSamps,sampOut.t_offset);
+				bool gyroFound = findLerpIndex(gyroIdx,gyroSamps,outTime);
 
 				// perform interpolation
 				if (gyroFound)
 				{
 					auto &sampA = gyroSamps.at(gyroIdx);
 					auto &sampB = gyroSamps.at(gyroIdx+1);
-					lerpTimedSample(sampOut.gyro, sampA, sampB, sampOut.t_offset);
+					lerpTimedSample(sampOut.gyro, sampA, sampB, outTime);
 				}
 				else if (gyroIdx == 0)
 				{
@@ -576,14 +576,14 @@ namespace gpt
 			// grav sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool gravFound = findLerpIndex(gravIdx,gravSamps,sampOut.t_offset);
+				bool gravFound = findLerpIndex(gravIdx,gravSamps,outTime);
 
 				// perform interpolation
 				if (gravFound)
 				{
 					auto &sampA = gravSamps.at(gravIdx);
 					auto &sampB = gravSamps.at(gravIdx+1);
-					lerpTimedSample(sampOut.grav, sampA, sampB, sampOut.t_offset);
+					lerpTimedSample(sampOut.grav, sampA, sampB, outTime);
 				}
 				else if (gravIdx == 0)
 				{
@@ -598,14 +598,14 @@ namespace gpt
 			// camera orientation sample interpolation
 			{
 				// find next two samples to interpolate between
-				bool coriFound = findLerpIndex(coriIdx,coriSamps,sampOut.t_offset);
+				bool coriFound = findLerpIndex(coriIdx,coriSamps,outTime);
 
 				// perform interpolation
 				if (coriFound)
 				{
 					auto &sampA = coriSamps.at(coriIdx);
 					auto &sampB = coriSamps.at(coriIdx+1);
-					lerpTimedSample(sampOut.cori, sampA, sampB, sampOut.t_offset);
+					lerpTimedSample(sampOut.cori, sampA, sampB, outTime);
 				}
 				else if (coriIdx == 0)
 				{
@@ -618,6 +618,30 @@ namespace gpt
 			}
 		}
 
+		return sampsOut;
+	}
+
+	std::vector<CombinedTimedSample>
+	getCombinedTimedSamples(
+		MP4_Source &mp4)
+	{
+		const size_t frameCount = mp4.frameCount();
+		if (frameCount <= 1)
+		{
+			throw std::runtime_error(
+				"not enough frames to combine samples with. frameCount = " + std::to_string(frameCount));
+		}
+		const double frameDt = 1.0 / mp4.fps();
+
+		auto combinedSamples = getCombinedSamples(mp4);
+		std::vector<CombinedTimedSample> sampsOut;
+		sampsOut.resize(combinedSamples.size());
+		for (size_t i=0; i<combinedSamples.size(); i++)
+		{
+			auto &sampOut = sampsOut.at(i);
+			sampOut.t_offset = frameDt * i;
+			sampOut.sample = combinedSamples.at(i);
+		}
 		return sampsOut;
 	}
 

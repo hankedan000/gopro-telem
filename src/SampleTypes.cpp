@@ -106,7 +106,7 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) <<
 			"t_offset: " << sample.t_offset << ", " <<
-			toString(sample) <<
+			toString(sample.sample,false) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
@@ -120,7 +120,7 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) <<
 			"t_offset: " << sample.t_offset << ", " <<
-			toString(sample) <<
+			toString(sample.sample,false) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
@@ -134,7 +134,7 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) <<
 			"t_offset: " << sample.t_offset << ", " <<
-			toString(sample) <<
+			toString(sample.sample,false) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
@@ -148,7 +148,7 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) <<
 			"t_offset: " << sample.t_offset << ", " <<
-			toString(sample) <<
+			toString(sample.sample,false) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
@@ -162,7 +162,7 @@ namespace gpt
 		ss << (withBraces ? "{ " : "") <<
 			std::fixed << std::setprecision(3) <<
 			"t_offset: " << sample.t_offset << ", " <<
-			toString(sample) <<
+			toString(sample.sample,false) <<
 			(withBraces ? " }" : "");
 		return ss.str();
 	}
@@ -174,12 +174,24 @@ namespace gpt
 	{
 		std::stringstream ss;
 		ss << (withBraces ? "{ \n" : "") <<
-			std::fixed << std::setprecision(3) <<
-			"t_offset: " << sample.t_offset << ", " <<
 			(withBraces ? "  " : "") << "accl: " << toString(sample.accl,true) << std::endl <<
 			(withBraces ? "  " : "") << "gyro: " << toString(sample.gyro,true) << std::endl <<
 			(withBraces ? "  " : "") << "grav: " << toString(sample.grav,true) << std::endl <<
 			(withBraces ? "  " : "") << "gps: " << toString(sample.gps,true) <<
+			(withBraces ? "\n}" : "");
+		return ss.str();
+	}
+
+	std::string
+	toString(
+		const CombinedTimedSample &sample,
+		bool withBraces)
+	{
+		std::stringstream ss;
+		ss << (withBraces ? "{ \n" : "") <<
+			std::fixed << std::setprecision(3) <<
+			"t_offset: " << sample.t_offset << ", " <<
+			toString(sample.sample,false) <<
 			(withBraces ? "\n}" : "");
 		return ss.str();
 	}

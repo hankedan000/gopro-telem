@@ -97,4 +97,8 @@ namespace gpt
 	getCombinedSamples(
 		MP4_Source &mp4);
 
+	std::vector<CombinedTimedSample>
+	getCombinedTimedSamples(
+		MP4_Source &mp4);
+
 }

@@ -225,7 +225,7 @@ dumpCombinedToCSV(
     gpt::MP4_Source &mp4,
     const ProgOptions &opts)
 {
-    auto samples = gpt::getCombinedSamples(mp4);
+    auto samples = gpt::getCombinedTimedSamples(mp4);
 
     // if sourceFilePath = "/tmp/GH010143.MP4", then
     // csvFileName = "GH010143_telemetry_combined.csv"
@@ -248,9 +248,10 @@ dumpCombinedToCSV(
     fprintf(csvFile,",cori_w,cori_x,cori_y,cori_z");
     fprintf(csvFile,",gps_lat (deg),gps_lon (deg),gps_altitude (m),gps_speed2D (m/s),gps_speed3D (m/s)");
     fprintf(csvFile,"\n");
-    for (const auto &sample : samples)
+    for (const auto &tSample : samples)
     {
-        fprintf(csvFile,"%0.06f",sample.t_offset);
+		const auto &sample = tSample.sample;
+        fprintf(csvFile,"%0.06f",tSample.t_offset);
         auto accl = sample.accl;
         fprintf(csvFile,",%+0.06f,%+0.06f,%+0.06f",accl.x,accl.y,accl.z);
         auto gyro = sample.gyro;
