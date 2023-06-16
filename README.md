@@ -32,6 +32,15 @@ cmake ..
 make -j
 ```
 
+### Build with conan
+
+``` bash
+conan install . --build=missing
+cd build
+cmake .. -DCMAKE_TOOLCHAIN_FILE=Release/generators/conan_toolchain.cmake -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+```
+
 ## Testing
 The repo contains a few cppunit tests. You can run them all after a build with `make test`. You should get output similar to this.
 
